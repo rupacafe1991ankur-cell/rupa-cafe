@@ -1,0 +1,282 @@
+[
+  {
+    "id": 101,
+    "name": "Chole Bhature",
+    "category": "Snacks",
+    "price": 120,
+    "desc": "Hot spicy chole served with fluffy bhature.",
+    "available": true,
+    "image": "/uploads/1779266032796-download--1-.jpg",
+    "popular": true,
+    "bestSeller": true
+  },
+  {
+    "id": 102,
+    "name": "Raj Kachori",
+    "category": "Chaat",
+    "price": 90,
+    "desc": "Crispy kachori with curd, chutney and masala.",
+    "available": true,
+    "image": "/uploads/1779266102550-download--2-.jpg"
+  },
+  {
+    "id": 103,
+    "name": "Veg Thali",
+    "category": "Thali",
+    "price": 180,
+    "desc": "Dal, sabzi, rice, roti, salad and sweet.",
+    "available": true,
+    "image": "/uploads/1779266127341-download--3-.jpg"
+  },
+  {
+    "id": 104,
+    "name": "Gulab Jamun",
+    "category": "Sweets",
+    "price": 60,
+    "desc": "Soft and juicy traditional Indian sweet.",
+    "available": true,
+    "image": "/uploads/1779266064956-download.jpg"
+  },
+  {
+    "id": 106,
+    "name": "Paneer Lababdar",
+    "category": "Indian Curry",
+    "price": 220,
+    "desc": "Rich paneer gravy with aromatic spices.",
+    "available": true,
+    "image": "/uploads/1780511033264-download--1-.jpg",
+    "popular": false,
+    "bestSeller": false
+  },
+  {
+    "id": 107,
+    "name": "Shahi Paneer",
+    "category": "Indian Curry",
+    "price": 220,
+    "desc": "Royal paneer curry in creamy gravy.",
+    "available": true,
+    "image": "/uploads/1780511049999-download--2-.jpg",
+    "popular": false,
+    "bestSeller": false
+  },
+  {
+    "id": 108,
+    "name": "Paneer Butter Masala",
+    "category": "Indian Curry",
+    "price": 220,
+    "desc": "Paneer cubes in buttery tomato gravy.",
+    "available": true,
+    "image": "/uploads/1780511067452-download--3-.jpg",
+    "popular": false,
+    "bestSeller": false
+  },
+  {
+    "id": 111,
+    "name": "Tawa Roti",
+    "category": "Roti",
+    "price": 12,
+    "desc": "Fresh hot tawa roti.",
+    "available": true,
+    "image": "/uploads/1780511082640-download--4-.jpg",
+    "popular": false,
+    "bestSeller": false
+  },
+  {
+    "id": 112,
+    "name": "Aloo Paratha",
+    "category": "Roti",
+    "price": 120,
+    "desc": "Stuffed potato paratha.",
+    "available": true,
+    "image": "/uploads/1780511105199-download--5-.jpg",
+    "popular": false,
+    "bestSeller": false
+  },
+  {
+    "id": 113,
+    "name": "Paneer Burger",
+    "category": "Burger",
+    "price": 140,
+    "desc": "Crispy paneer burger.",
+    "available": true,
+    "image": "/uploads/1780511121624-download--6-.jpg",
+    "popular": false,
+    "bestSeller": false
+  },
+  {
+    "id": 114,
+    "name": "Tikki Burger",
+    "category": "Burger",
+    "price": 80,
+    "desc": "Classic veg tikki burger.",
+    "available": true,
+    "image": "/uploads/1780511134812-download--7-.jpg",
+    "popular": false,
+    "bestSeller": false
+  },
+  {
+    "id": 115,
+    "name": "Veg Sandwich Plain",
+    "category": "Sandwich",
+    "price": 130,
+    "desc": "Fresh vegetable sandwich.",
+    "available": true,
+    "image": "/uploads/1780511149576-download--8-.jpg",
+    "popular": false,
+    "bestSeller": false
+  },
+  {
+    "id": 116,
+    "name": "Paneer Sandwich",
+    "category": "Sandwich",
+    "price": 160,
+    "desc": "Paneer loaded sandwich.",
+    "available": true,
+    "image": "/uploads/1780511162195-download--9-.jpg",
+    "popular": false,
+    "bestSeller": false
+  },
+  {
+    "id": 117,
+    "name": "Cheese Pizza Small",
+    "category": "Pizza",
+    "price": 220,
+    "desc": "Classic cheese pizza.",
+    "available": true,
+    "image": "/uploads/1780511176103-download--10-.jpg",
+    "popular": false,
+    "bestSeller": false
+  },
+  {
+    "id": 118,
+    "name": "Cheese Pizza Medium",
+    "category": "Pizza",
+    "price": 280,
+    "desc": "Medium size cheese pizza.",
+    "available": true,
+    "image": "/uploads/1780511191859-download--11-.jpg",
+    "popular": false,
+    "bestSeller": false
+  },
+  {
+    "id": 119,
+    "name": "Loaded Veg Pizza Medium",
+    "category": "Pizza",
+    "price": 350,
+    "desc": "Pizza loaded with vegetables and paneer.",
+    "available": true,
+    "image": "/uploads/1780511207315-download--12-.jpg",
+    "popular": false,
+    "bestSeller": false
+  },
+  {
+    "id": 120,
+    "name": "Veg Noodles",
+    "category": "Noodles",
+    "price": 80,
+    "desc": "Stir fried veg noodles.",
+    "available": true,
+    "image": "/uploads/1780511224151-download--13-.jpg",
+    "popular": false,
+    "bestSeller": false
+  },
+  {
+    "id": 121,
+    "name": "Hakka Noodles",
+    "category": "Noodles",
+    "price": 150,
+    "desc": "Popular hakka style noodles.",
+    "available": true,
+    "image": "/uploads/1780511238340-download--14-.jpg",
+    "popular": false,
+    "bestSeller": false
+  },
+  {
+    "id": 123,
+    "name": "Veg Fried Momos",
+    "category": "Momos",
+    "price": 140,
+    "desc": "Crispy fried momos.",
+    "available": true,
+    "image": "/uploads/1780511252039-download--15-.jpg",
+    "popular": false,
+    "bestSeller": false
+  },
+  {
+    "id": 124,
+    "name": "Tandoori Momos",
+    "category": "Momos",
+    "price": 220,
+    "desc": "Spicy tandoori momos.",
+    "available": true,
+    "image": "/uploads/1780511264335-download--16-.jpg",
+    "popular": false,
+    "bestSeller": false
+  },
+  {
+    "id": 125,
+    "name": "Hot Coffee",
+    "category": "Coffee",
+    "price": 70,
+    "desc": "Fresh hot coffee.",
+    "available": true,
+    "image": "/uploads/1780511277316-download--17-.jpg",
+    "popular": false,
+    "bestSeller": false
+  },
+  {
+    "id": 126,
+    "name": "Cold Coffee",
+    "category": "Coffee",
+    "price": 140,
+    "desc": "Chilled coffee.",
+    "available": true,
+    "image": "/uploads/1780511289997-download--18-.jpg",
+    "popular": false,
+    "bestSeller": false
+  },
+  {
+    "id": 127,
+    "name": "Vanilla Shake",
+    "category": "Shakes",
+    "price": 120,
+    "desc": "Creamy vanilla shake.",
+    "available": true,
+    "image": "/uploads/1780511303469-download--19-.jpg",
+    "popular": false,
+    "bestSeller": false
+  },
+  {
+    "id": 128,
+    "name": "Chocolate Shake",
+    "category": "Shakes",
+    "price": 120,
+    "desc": "Rich chocolate shake.",
+    "available": true,
+    "image": "/uploads/1780511316401-download--20-.jpg",
+    "popular": false,
+    "bestSeller": false
+  },
+  {
+    "id": 129,
+    "name": "Oreo Shake",
+    "category": "Shakes",
+    "price": 120,
+    "desc": "Oreo cookie milkshake.",
+    "available": true,
+    "image": "/uploads/1780511329246-download--21-.jpg",
+    "popular": false,
+    "bestSeller": false
+  },
+  {
+    "id": 1780510996991,
+    "name": "Dal Makhni",
+    "category": "Indian Curry",
+    "price": 220,
+    "desc": "",
+    "available": true,
+    "popular": false,
+    "bestSeller": false,
+    "image": "/uploads/1780511340203-download.jpg"
+  }
+]

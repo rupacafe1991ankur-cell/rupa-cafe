@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Track Order</title>
+<link rel="stylesheet" href="/admin/css/style.css">
+<style>
+
+body{
+font-family:Arial,sans-serif;
+background:#f5f5f5;
+}
+
+.tracking-box{
+background:white;
+padding:25px;
+border-radius:15px;
+max-width:700px;
+margin:auto;
+box-shadow:0 4px 15px rgba(0,0,0,.1);
+}
+
+.tracker{
+display:flex;
+justify-content:space-between;
+margin:25px 0;
+gap:10px;
+flex-wrap:wrap;
+}
+
+.step{
+padding:10px 15px;
+border-radius:25px;
+background:#e5e7eb;
+font-weight:bold;
+}
+
+.step.active{
+background:#16a34a;
+color:white;
+}
+
+.progress{
+height:14px;
+background:#ddd;
+border-radius:20px;
+overflow:hidden;
+}
+
+.progress-bar{
+height:100%;
+background:#16a34a;
+width:0;
+transition:.4s;
+}
+
+</style>
+</head>
+<body>
+
+<div class="section">
+
+<h1>☕ Track Your Order</h1>
+
+<div class="tracking-box">
+
+<h2 id="orderId">
+Loading...
+</h2>
+
+<h3 id="status">
+Loading...
+</h3>
+<div class="tracker">
+
+<div id="stepPending" class="step">
+Pending
+</div>
+
+<div id="stepAccepted" class="step">
+Accepted
+</div>
+
+<div id="stepPreparing" class="step">
+Preparing
+</div>
+
+<div id="stepReady" class="step">
+Ready
+</div>
+
+<div id="stepDelivered" class="step">
+Delivered
+</div>
+
+</div>
+<div class="progress">
+
+<div
+class="progress-bar"
+id="progressBar">
+</div>
+
+</div>
+
+<p id="eta">
+Loading...
+</p>
+
+</div>
+
+</div>
+
+<script>
+
+async function loadTracking(){
+
+const params =
+new URLSearchParams(
+window.location.search
+);
+
+const id =
+params.get("id");
+
+if(!id){
+
+document.body.innerHTML =
+"<h2>Order ID Missing</h2>";
+
+return;
+}
+
+const data =
+await fetch(
+"/api/order/" + id
+).then(r=>r.json());
+
+if(!data.success){
+
+document.body.innerHTML =
+"<h2>Order Not Found</h2>";
+
+return;
+}
+
+const order =
+data.order;
+
+document.getElementById(
+"orderId"
+).innerText =
+"Order #" + order.id;
+
+document.getElementById(
+"status"
+).innerText =
+order.status;
+
+let progress = 0;
+let eta = "";
+
+switch(order.status){
+
+case "Pending":
+progress = 20;
+eta = "20 Minutes";
+break;
+
+case "Accepted":
+progress = 40;
+eta = "15 Minutes";
+break;
+
+case "Preparing":
+progress = 70;
+eta = "10 Minutes";
+break;
+
+case "Ready":
+progress = 90;
+eta = "Ready For Pickup";
+break;
+
+case "Delivered":
+progress = 100;
+eta = "Delivered";
+break;
+
+default:
+progress = 0;
+eta = "-";
+}
+const steps = [
+
+"Pending",
+"Accepted",
+"Preparing",
+"Ready",
+"Delivered"
+
+];
+
+steps.forEach(step=>{
+
+const el =
+document.getElementById(
+"step" + step
+);
+
+if(el){
+
+el.classList.remove(
+"active"
+);
+
+}
+
+});
+
+if(order.status === "Pending")
+stepPending.classList.add("active");
+
+if(order.status === "Accepted"){
+stepPending.classList.add("active");
+stepAccepted.classList.add("active");
+}
+
+if(order.status === "Preparing"){
+stepPending.classList.add("active");
+stepAccepted.classList.add("active");
+stepPreparing.classList.add("active");
+}
+
+if(order.status === "Ready"){
+stepPending.classList.add("active");
+stepAccepted.classList.add("active");
+stepPreparing.classList.add("active");
+stepReady.classList.add("active");
+}
+
+if(order.status === "Delivered"){
+stepPending.classList.add("active");
+stepAccepted.classList.add("active");
+stepPreparing.classList.add("active");
+stepReady.classList.add("active");
+stepDelivered.classList.add("active");
+}
+document.getElementById(
+"progressBar"
+).style.width =
+progress + "%";
+
+document.getElementById(
+"eta"
+).innerText =
+"Estimated Time: " + eta;
+
+}
+
+loadTracking();
+
+setInterval(
+loadTracking,
+10000
+);
+
+</script>
+
+</body>
+</html>

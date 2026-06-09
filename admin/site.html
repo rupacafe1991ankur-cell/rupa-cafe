@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Website Settings</title>
+  <link rel="stylesheet" href="/admin/css/style.css">
+</head>
+
+<body>
+
+<div class="admin-layout">
+
+  <aside class="sidebar">
+    <h2 id="adminName">Rupa Cafe Admin Panel</h2>
+
+    <a href="/admin/dashboard.html">
+Dashboard
+</a>
+
+<a href="/admin/menu.html">
+Food Items
+</a>
+
+<a href="/admin/orders.html">
+Customer Orders
+</a>
+<a href="/admin/reviews.html">
+Customer Reviews
+</a>
+<a href="/admin/coupons.html">
+Coupons
+</a>
+<a href="/admin/loyalty.html">
+Loyalty Points
+</a>
+
+<a href="/admin/site.html">
+Website Settings
+</a>
+
+<a href="/">
+View Frontend
+</a>
+
+<a
+href="#"
+
+onclick="logout()">
+
+Logout
+
+</a>
+
+  </aside>
+
+  <main class="main">
+
+    <h1>Website Settings</h1>
+
+    <div class="form-box">
+
+      <input id="name" placeholder="Restaurant Frontend Name">
+
+      <input id="adminNameInput" placeholder="Admin Panel Name">
+
+      <input id="hero" placeholder="Hero Heading">
+      <input id="whatsapp"
+      placeholder="WhatsApp Number (91XXXXXXXXXX)">
+
+      <textarea id="heroText" placeholder="Hero Subtitle"></textarea>
+
+      <textarea id="offer" placeholder="Special Offer"></textarea>
+
+      <textarea id="contact" placeholder="Contact Details"></textarea>
+
+      <textarea id="copyrightInput" placeholder="Copyright Text"></textarea>
+      <input
+id="instagramInput"
+placeholder="Instagram URL">
+
+<input
+id="facebookInput"
+placeholder="Facebook URL">
+          <textarea
+id="invoiceFooter"
+placeholder="Invoice Footer Message">
+</textarea>
+      <button class="btn" onclick="saveSite()">
+        Save Website Settings
+      </button>
+
+    </div>
+
+  </main>
+
+</div>
+
+<script src="/admin/js/admin.js"></script>
+
+<script>
+async function loadSite(){
+
+  const s = await fetch("/api/site").then(r => r.json());
+
+  document.getElementById("name").value =
+  s.name || "";
+
+  document.getElementById("adminNameInput").value =
+  s.adminName || "";
+
+  document.getElementById("hero").value =
+  s.hero || "";
+
+  document.getElementById("heroText").value =
+  s.heroText || "";
+
+  document.getElementById("offer").value =
+  s.offer || "";
+
+  document.getElementById("contact").value =
+  s.contact || "";
+  document.getElementById("whatsapp").value =
+  s.whatsapp || "";
+
+  document.getElementById("copyrightInput").value =
+  s.copyright || "";
+  document.getElementById(
+"instagramInput"
+).value =
+s.instagram || "";
+
+document.getElementById(
+"facebookInput"
+).value =
+s.facebook || "";
+  document.getElementById("invoiceFooter").value =
+s.invoiceFooter || "";
+  document.getElementById("adminName").innerText =
+  s.adminName || "Rupa Cafe Admin Panel";
+}
+
+async function saveSite(){
+
+  await fetch("/api/site", {
+    method: "PUT",
+    headers: {
+  "Content-Type": "application/json",
+
+  "x-admin-key":
+  localStorage.getItem("adminKey")
+},
+    body: JSON.stringify({
+      name: document.getElementById("name").value,
+      adminName: document.getElementById("adminNameInput").value,
+      hero: document.getElementById("hero").value,
+      heroText: document.getElementById("heroText").value,
+      offer: document.getElementById("offer").value,
+      contact: document.getElementById("contact").value,
+      whatsapp: document.getElementById("whatsapp").value,
+      copyright: document.getElementById("copyrightInput").value,
+      instagram:
+document.getElementById(
+"instagramInput"
+).value,
+
+facebook:
+document.getElementById(
+"facebookInput"
+).value,
+      invoiceFooter:
+      document.getElementById("invoiceFooter").value
+    })
+  });
+
+  alert("Website settings saved successfully");
+
+  loadSite();
+}
+
+loadSite();
+</script>
+<script>
+if(localStorage.getItem("darkMode")==="true"){
+    document.body.classList.add("dark-mode");
+}
+</script>
+</body>
+</html>

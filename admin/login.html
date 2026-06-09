@@ -1,0 +1,31 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Rupa Cafe Admin Login</title>
+<link rel="stylesheet" href="/admin/css/style.css">
+</head>
+<body>
+<div class="login">
+  <h1> Rupa CafeLogin</h1>
+  <input id="user" placeholder="Username">
+  <input id="pass" type="password" placeholder="Password">
+  <button class="btn" onclick="login()">Login</button>
+  <p><b>Username:</b> admin<br><b>Password:</b> admin123</p>
+</div>
+<script>
+function login(){
+  if(user.value.trim()==="admin" && pass.value.trim()==="admin123"){
+    localStorage.setItem(
+"adminKey",
+"RupaCafe2026SecureAdminKey"
+);
+    location.href="/admin/dashboard.html";
+  }else{
+    alert("Wrong username or password");
+  }
+}
+</script>
+</body>
+</html>

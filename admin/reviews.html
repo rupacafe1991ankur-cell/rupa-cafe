@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Customer Reviews</title>
+<link rel="stylesheet" href="/admin/css/style.css">
+</head>
+
+<body>
+
+<div class="admin-layout">
+
+<aside class="sidebar">
+
+<h2>Rupa Cafe Admin Panel</h2>
+
+<a href="/admin/dashboard.html">
+Dashboard
+</a>
+
+<a href="/admin/menu.html">
+Food Items
+</a>
+
+<a href="/admin/orders.html">
+Customer Orders
+</a>
+<a href="/admin/reviews.html">
+Customer Reviews
+</a>
+<a href="/admin/coupons.html">
+Coupons
+</a>
+<a href="/admin/loyalty.html">
+Loyalty Points
+</a>
+
+<a href="/admin/site.html">
+Website Settings
+</a>
+
+<a href="/">
+View Frontend
+</a>
+
+<a
+href="#"
+
+onclick="logout()">
+
+Logout
+
+</a>
+</aside>
+
+<main class="main">
+
+<h1>Customer Reviews</h1>
+
+<div class="form-box">
+
+<input
+id="reviewName"
+placeholder="Customer Name">
+
+<select id="reviewRating">
+
+<option>⭐⭐⭐⭐⭐</option>
+<option>⭐⭐⭐⭐</option>
+<option>⭐⭐⭐</option>
+<option>⭐⭐</option>
+<option>⭐</option>
+
+</select>
+
+<textarea
+id="reviewText"
+placeholder="Write Review">
+</textarea>
+
+<button
+class="btn"
+onclick="saveReview()">
+
+Add Review
+
+</button>
+
+</div>
+
+<br>
+
+<div id="reviewList"></div>
+
+</main>
+
+</div>
+
+<script>
+
+async function loadReviews(){
+
+const reviews =
+await fetch("/api/reviews")
+.then(r => r.json());
+
+document.getElementById(
+"reviewList"
+).innerHTML =
+
+reviews.map(r => `
+
+<div class="cart-box">
+
+<h3>${r.rating}</h3>
+
+<p>${r.review}</p>
+
+<b>- ${r.name}</b>
+
+<br><br>
+<button
+class="btn green"
+onclick="approveReview(${r.id})">
+
+Approve
+
+</button>
+
+<br><br>
+
+<p>
+
+Status:
+${r.approved ? "✅ Approved" : "⏳ Pending"}
+
+</p>
+<button
+class="btn gray"
+onclick="deleteReview(${r.id})">
+
+Delete
+
+</button>
+
+</div>
+
+<br>
+
+`).join("");
+
+}
+
+async function saveReview(){
+
+const name =
+document.getElementById("reviewName").value;
+
+const rating =
+document.getElementById("reviewRating").value;
+
+const review =
+document.getElementById("reviewText").value;
+
+if(!name || !review){
+
+alert("Fill all fields");
+
+return;
+
+}
+
+await fetch("/api/reviews",{
+
+method:"POST",
+
+headers:{
+"Content-Type":"application/json"
+},
+
+body:JSON.stringify({
+
+name,
+rating,
+review
+
+})
+
+});
+
+document.getElementById("reviewName").value = "";
+document.getElementById("reviewText").value = "";
+
+loadReviews();
+
+}
+async function approveReview(id){
+
+await fetch(
+"/api/reviews/" + id + "/approve",
+{
+method:"PUT",
+
+headers:{
+"x-admin-key":
+localStorage.getItem("adminKey")
+}
+}
+);
+
+loadReviews();
+
+}
+async function deleteReview(id){
+
+if(!confirm("Delete Review?"))
+return;
+
+await fetch(
+"/api/reviews/" + id,
+{
+method:"DELETE",
+
+headers:{
+"x-admin-key":
+localStorage.getItem("adminKey")
+}
+}
+);
+
+loadReviews();
+
+}
+
+loadReviews();
+
+</script>
+<script>
+if(localStorage.getItem("darkMode")==="true"){
+    document.body.classList.add("dark-mode");
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,367 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Food Items</title>
+  <link rel="stylesheet" href="/admin/css/style.css">
+</head>
+
+<body>
+
+<div class="admin-layout">
+
+  <aside class="sidebar">
+    <h2 id="adminName">Rupa Cafe Admin Panel</h2>
+
+    <a href="/admin/dashboard.html">
+Dashboard
+</a>
+
+<a href="/admin/menu.html">
+Food Items
+</a>
+
+<a href="/admin/orders.html">
+Customer Orders
+</a>
+<a href="/admin/reviews.html">
+Customer Reviews
+</a>
+<a href="/admin/coupons.html">
+Coupons
+</a>
+<a href="/admin/loyalty.html">
+Loyalty Points
+</a>
+
+<a href="/admin/site.html">
+Website Settings
+</a>
+
+<a href="/">
+View Frontend
+</a>
+
+<a
+href="#"
+
+onclick="logout()">
+
+Logout
+
+</a>
+
+  </aside>
+
+  <main class="main">
+
+    <h1>Manage Food Items</h1>
+
+    <div class="form-box">
+      <h2>Add / Edit Food Item</h2>
+
+      <input type="hidden" id="foodId">
+
+      <input id="foodName" placeholder="Food Name">
+
+      <input id="foodCategory" placeholder="Category">
+
+      <input id="foodPrice" type="number" placeholder="Price">
+
+      <textarea id="foodDesc" placeholder="Description"></textarea>
+
+      <select id="foodAvailable">
+        <option value="true">Available</option>
+        <option value="false">Not Available</option>
+      </select>
+      
+      <label>
+
+Popular Item
+
+</label>
+
+<input
+type="checkbox"
+id="foodPopular">
+
+<br><br>
+
+<label>
+
+Best Seller
+
+</label>
+
+<input
+type="checkbox"
+id="foodBestSeller">
+
+<br><br>
+
+      <input id="foodImage" type="file" accept="image/*">
+
+      <button class="btn" onclick="saveFood()">Save Food Item</button>
+      <button class="btn gray" onclick="clearForm()">Clear</button>
+    </div>
+
+    <h2>Current Food Items</h2>
+
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Image</th>
+            <th>Food</th>
+            <th>Price</th>
+            <th>Status</th>
+            <th>Action</th>
+          </tr>
+        </thead>
+
+        <tbody id="foodRows"></tbody>
+      </table>
+    </div>
+
+  </main>
+
+</div>
+
+<script src="/admin/js/admin.js"></script>
+
+<script>
+let menuData = [];
+
+function placeholder(name){
+  return "https://via.placeholder.com/100x70?text=" + encodeURIComponent(name || "Food");
+}
+
+async function loadAdminName(){
+  const site = await fetch("/api/site").then(r => r.json());
+  document.getElementById("adminName").innerText =
+  site.adminName || "Rupa Cafe Admin Panel";
+}
+
+async function loadMenu(){
+  const res = await fetch("/api/menu");
+  menuData = await res.json();
+
+  const foodRows = document.getElementById("foodRows");
+
+  if(menuData.length === 0){
+    foodRows.innerHTML = `
+      <tr>
+        <td colspan="5">No food items added yet.</td>
+      </tr>
+    `;
+    return;
+  }
+
+  foodRows.innerHTML = menuData.map(item => {
+    const available = item.available !== false;
+
+    return `
+      <tr>
+        <td>
+          <img src="${item.image || placeholder(item.name)}"
+          style="width:90px;height:65px;object-fit:cover;border-radius:8px;">
+        </td>
+
+        <td>
+          <b>${item.name}</b><br>
+          ${item.category}<br>
+          <small>${item.desc}</small>
+        </td>
+
+        <td>₹${item.price}</td>
+
+        <td>
+          <b style="color:${available ? 'green' : 'red'}">
+            ${available ? 'Available' : 'Not Available'}
+          </b>
+        </td>
+
+        <td>
+          <button onclick="toggleAvailability(${item.id}, ${available ? false : true})">
+            Mark ${available ? 'Not Available' : 'Available'}
+          </button>
+
+          <button onclick="editFood(${item.id})">
+            Edit
+          </button>
+
+          <button onclick="deleteFood(${item.id})">
+            Delete
+          </button>
+        </td>
+      </tr>
+    `;
+  }).join("");
+}
+
+async function saveFood(){
+  const id = document.getElementById("foodId").value;
+  const name = document.getElementById("foodName").value.trim();
+  const category = document.getElementById("foodCategory").value.trim();
+  const price = document.getElementById("foodPrice").value.trim();
+  const desc = document.getElementById("foodDesc").value.trim();
+  const available = document.getElementById("foodAvailable").value;
+  const image = document.getElementById("foodImage");
+
+  if(name === "" || price === ""){
+    alert("Food name and price are required");
+    return;
+  }
+
+  const formData = new FormData();
+
+  formData.append("name", name);
+  formData.append("category", category);
+  formData.append("price", price);
+  formData.append("desc", desc);
+  formData.append("available", available);
+  formData.append(
+"popular",
+document.getElementById("foodPopular").checked ? "true" : "false"
+);
+
+formData.append(
+"bestSeller",
+document.getElementById("foodBestSeller").checked ? "true" : "false"
+);
+
+  if(image.files.length > 0){
+    formData.append("image", image.files[0]);
+  }
+
+  const url = id ? "/api/menu/" + id : "/api/menu";
+  const method = id ? "PUT" : "POST";
+
+  const res = await fetch(url, {
+  method: method,
+  headers:{
+    "x-admin-key":
+    localStorage.getItem("adminKey")
+  },
+  body: formData
+});
+  const data = await res.json();
+
+  if(data.success){
+    alert("Food item saved successfully");
+    clearForm();
+    loadMenu();
+  }else{
+    alert("Save failed");
+  }
+}
+
+function editFood(id){
+
+  const item =
+  menuData.find(
+    x => x.id === id
+  );
+
+  if(!item){
+    return;
+  }
+
+  document.getElementById(
+    "foodId"
+  ).value = item.id;
+
+  document.getElementById(
+    "foodName"
+  ).value = item.name;
+
+  document.getElementById(
+    "foodCategory"
+  ).value = item.category;
+
+  document.getElementById(
+    "foodPrice"
+  ).value = item.price;
+
+  document.getElementById(
+    "foodDesc"
+  ).value = item.desc;
+
+  document.getElementById(
+    "foodAvailable"
+  ).value =
+  item.available !== false
+  ? "true"
+  : "false";
+
+  document.getElementById(
+    "foodPopular"
+  ).checked =
+  item.popular || false;
+
+  document.getElementById(
+    "foodBestSeller"
+  ).checked =
+  item.bestSeller || false;
+
+  window.scrollTo(0,0);
+}
+
+  
+
+async function toggleAvailability(id, value){
+  await fetch("/api/menu/" + id + "/availability", {
+    method: "PUT",
+    headers: {
+  "Content-Type": "application/json",
+  "x-admin-key":
+  localStorage.getItem("adminKey")
+},
+    body: JSON.stringify({
+      available: value
+    })
+  });
+
+  loadMenu();
+}
+
+async function deleteFood(id){
+  if(confirm("Delete this food item?")){
+    await fetch("/api/menu/" + id, {
+  method: "DELETE",
+  headers:{
+    "x-admin-key":
+    localStorage.getItem("adminKey")
+  }
+});
+    loadMenu();
+  }
+}
+
+function clearForm(){
+  document.getElementById("foodId").value = "";
+  document.getElementById("foodName").value = "";
+  document.getElementById("foodCategory").value = "";
+  document.getElementById("foodPrice").value = "";
+  document.getElementById("foodDesc").value = "";
+  document.getElementById("foodAvailable").value = "true";
+  document.getElementById(
+"foodPopular"
+).checked = false;
+
+document.getElementById(
+"foodBestSeller"
+).checked = false;
+  document.getElementById("foodImage").value = "";
+}
+
+loadAdminName();
+loadMenu();
+</script>
+<script>
+if(localStorage.getItem("darkMode")==="true"){
+    document.body.classList.add("dark-mode");
+}
+</script>
+</body>
+</html>

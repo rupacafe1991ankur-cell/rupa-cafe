@@ -1,0 +1,663 @@
+<!DOCTYPE html>
+<html>
+<head>
+
+<meta charset="UTF-8">
+
+<title>My Account</title>
+
+<link rel="stylesheet" href="/css/style.css">
+
+</head>
+
+<body>
+
+<div style="padding:20px;">
+
+<button
+class="btn"
+onclick="window.location.href='/'">
+
+← Back To Home
+
+</button>
+
+</div>
+
+<div class="cart-box">
+
+<div class="account-hero">
+<div class="account-avatar">
+<img
+id="profilePic"
+src="/images/default-user.png"
+style="
+width:100px;
+height:100px;
+border-radius:50%;
+object-fit:cover;
+">
+</div>
+
+<input
+type="file"
+id="profileUpload"
+accept="image/*">
+<h1>
+👋 Welcome,
+<span id="userName"></span>
+</h1>
+
+<p id="userPhone"></p>
+
+<p id="userEmail"></p>
+
+<p>
+
+🏆 Loyalty Points:
+<span id="accountPoints">
+0
+</span>
+
+</p>
+
+</div>
+
+<div class="stats">
+
+<div class="stat">
+
+<h2 id="favoriteCount">
+0
+</h2>
+
+<p>
+❤️ Favorites
+</p>
+
+</div>
+
+<div class="stat">
+
+<h2 id="orderCount">
+0
+</h2>
+
+<p>
+📦 Orders
+</p>
+
+</div>
+
+<div class="stat">
+
+<h2 id="notificationCount">
+0
+</h2>
+
+<p>
+🔔 Notifications
+</p>
+
+</div>
+</div>
+<h2 style="text-align:center">
+📊 Account Summary
+</h2>
+<div class="quick-actions">
+
+<button
+class="btn"
+onclick="window.location.href='/#menu'">
+
+🍽 Order Food
+
+</button>
+
+<button
+class="btn"
+onclick="window.location.href='/#track'">
+
+📦 Track Order
+
+</button>
+
+</div>
+<div class="stats">
+
+<div class="stat">
+
+<h3>🏆 Member Status</h3>
+
+<p id="memberTier">
+Bronze
+</p>
+
+</div>
+
+<div class="stat">
+
+<h3>🎟 Available Coupons</h3>
+
+<p id="couponCount">
+0
+</p>
+
+</div>
+
+</div>
+</div>
+
+<h2 style="text-align:center">
+🕒 Recently Ordered
+</h2>
+
+<div
+id="recentOrders"
+class="menu-grid">
+
+Loading...
+
+</div>
+
+<br>
+
+<h2 style="text-align:center">
+
+❤️ My Favorite Foods
+
+</h2>
+
+<div
+id="favoriteFoods">
+
+Loading...
+
+</div>
+<h2 style="text-align:center">
+My Orders
+</h2>
+<br>
+<div
+id="orderHistory">
+
+Loading...
+
+</div>
+<div
+style="
+display:flex;
+justify-content:center;
+align-items:center;
+gap:15px;
+">
+
+<h2>
+🔔 Notifications
+</h2>
+
+<button
+class="btn"
+onclick="clearNotifications()">
+
+🗑 Clear All
+
+</button>
+
+</div>
+
+<div
+id="notificationList">
+
+Loading...
+
+</div>
+<div style="text-align:center;margin:30px 0;">
+
+<button
+class="btn"
+onclick="logoutUser()">
+
+🚪 Logout
+
+</button>
+
+</div>
+
+<script>
+
+window.logoutUser = function(){
+
+localStorage.removeItem("rupaUser");
+
+alert("Logged Out Successfully");
+
+window.location.replace("/login.html");
+
+}
+
+</script>
+
+<script>
+
+const upload =
+document.getElementById(
+"profileUpload"
+);
+
+upload.addEventListener(
+"change",
+function(e){
+
+const file =
+e.target.files[0];
+
+if(!file) return;
+
+const reader =
+new FileReader();
+
+reader.onload =
+function(){
+
+localStorage.setItem(
+"profilePic",
+reader.result
+);
+
+document
+.getElementById(
+"profilePic"
+).src =
+reader.result;
+
+};
+
+reader.readAsDataURL(file);
+
+}
+);
+
+const savedPic =
+localStorage.getItem(
+"profilePic"
+);
+
+if(savedPic){
+
+document
+.getElementById(
+"profilePic"
+).src =
+savedPic;
+
+}
+
+</script>
+<script>
+
+
+
+</script>
+<script>
+function goToMenu() {
+    window.location.href = "/#menu";
+}
+</script>
+
+<script>
+
+async function loadAccount(){
+
+try{
+
+const user =
+JSON.parse(localStorage.getItem("rupaUser"));
+if(!user.phone){
+user.phone = user.email;
+}
+
+console.log("USER =", user);
+console.log(user);
+console.log(user.phone);
+if(!user){
+location.href="/login.html";
+return;
+}
+
+document.getElementById("userName").innerText=user.name||"";
+document.getElementById("userPhone").innerText=user.phone||"";
+document.getElementById("userEmail").innerText=user.email||"";
+
+const ordersRes =
+await fetch("/api/my-orders/" + encodeURIComponent(user.phone));
+let orders = [];
+orders = await ordersRes.json();
+
+document.getElementById("orderCount").innerText =
+orders.length;
+
+// LOAD FAVORITES
+let favs = [];
+
+try{
+
+const favsRes =
+await fetch("/api/favorites/" + encodeURIComponent(user.phone));
+
+favs =
+await favsRes.json();
+
+}catch(e){
+
+console.log(
+"Favorites Error",
+e
+);
+
+}
+
+document.getElementById(
+"favoriteCount"
+).innerText =
+favs.length;
+
+if(favs.length){
+
+document.getElementById(
+"favoriteFoods"
+).innerHTML =
+
+favs.map(f=>`
+
+<div class="card">
+
+<h3>${f.name || "Food Item"}</h3>
+
+<p>₹${f.price || 0}</p>
+
+</div>
+
+`).join("");
+
+}else{
+
+document.getElementById(
+"favoriteFoods"
+).innerHTML =
+
+"<h3>No Favourite Foods</h3>";
+
+}
+
+
+// LOAD NOTIFICATIONS
+
+let notifications = [];
+
+try{
+
+const notifRes =
+await fetch("/api/notifications/" + encodeURIComponent(user.phone));
+
+notifications =
+await notifRes.json();
+console.log("ORDERS =", orders);
+console.log("FAVS =", favs);
+console.log("NOTIFICATIONS =", notifications);
+}catch(e){
+
+console.log(
+"Notification Error",
+e
+);
+
+}
+
+document.getElementById(
+"notificationCount"
+).innerText =
+notifications.length;
+
+if(notifications.length){
+
+document.getElementById(
+"notificationList"
+).innerHTML =
+
+notifications.map(n=>`
+
+<div class="card">
+
+<p>${n.message}</p>
+
+</div>
+
+`).join("");
+
+}else{
+
+document.getElementById(
+"notificationList"
+).innerHTML =
+
+"<h3>No Notifications</h3>";
+
+}
+
+if(orders.length){
+
+document.getElementById("recentOrders").innerHTML =
+orders.slice(0,3).map(order=>`
+
+<div class="card">
+
+<h3>Order #${order.id}</h3>
+
+<p>Status: ${order.status}</p>
+
+<p>Total: ₹${order.total}</p>
+
+<button
+class="btn"
+onclick="downloadInvoice(${order.id})">
+
+📄 Download Invoice
+
+</button>
+
+</div>
+
+`).join("");
+
+document.getElementById("orderHistory").innerHTML =
+orders.map(order=>`
+
+<div class="card">
+
+<h3>Order #${order.id}</h3>
+
+<p>Status: ${order.status}</p>
+
+<p>Total: ₹${order.total}</p>
+
+<button
+class="btn"
+onclick="downloadInvoice(${order.id})">
+
+📄 Download Invoice
+
+</button>
+
+</div>
+
+`).join("");
+
+}else{
+
+document.getElementById("recentOrders").innerHTML =
+"<h3>No Recent Orders</h3>";
+
+document.getElementById("orderHistory").innerHTML =
+"<h3>No Order History</h3>";
+
+}
+
+}catch(err){
+
+console.error(err);
+
+document.getElementById(
+"orderHistory"
+).innerHTML =
+"<h3>Failed To Load Orders</h3>";
+
+document.getElementById(
+"favoriteFoods"
+).innerHTML =
+"<h3>Failed To Load Favorites</h3>";
+
+document.getElementById(
+"notificationList"
+).innerHTML =
+"<h3>Failed To Load Notifications</h3>";
+
+}
+
+}
+async function clearNotifications(){
+
+const user =
+JSON.parse(
+localStorage.getItem(
+"rupaUser"
+)
+);
+
+if(
+!confirm(
+"Clear all notifications?"
+)
+){
+return;
+}
+
+await fetch(
+"/api/notifications/" +
+encodeURIComponent(user.phone),
+{
+method:"DELETE"
+}
+);
+
+loadAccount();
+
+}
+loadAccount();
+
+function downloadInvoice(orderId){
+
+const user =
+JSON.parse(localStorage.getItem("rupaUser"));
+
+fetch("/api/my-orders/" + encodeURIComponent(user.phone))
+.then(r => r.json())
+.then(orders => {
+
+const order =
+orders.find(
+o => o.id == orderId
+);
+
+if(!order){
+alert("Order not found");
+return;
+}
+
+const invoiceWindow =
+window.open("", "_blank");
+
+invoiceWindow.document.write(`
+
+<html>
+<head>
+<title>Invoice ${order.id}</title>
+
+<style>
+
+body{
+font-family:Arial;
+padding:20px;
+}
+
+h1{
+text-align:center;
+}
+
+table{
+width:100%;
+border-collapse:collapse;
+}
+
+th,td{
+border:1px solid #ccc;
+padding:8px;
+}
+
+</style>
+
+</head>
+
+<body>
+
+<h1>Rupa Cafe Invoice</h1>
+
+<p><b>Order ID:</b> ${order.id}</p>
+<p><b>Customer:</b> ${order.customer}</p>
+<p><b>Phone:</b> ${order.phone}</p>
+<p><b>Status:</b> ${order.status}</p>
+
+<table>
+
+<tr>
+<th>Item</th>
+<th>Qty</th>
+<th>Price</th>
+</tr>
+
+${order.items.map(item => `
+<tr>
+<td>${item.name}</td>
+<td>${item.qty}</td>
+<td>₹${item.price}</td>
+</tr>
+`).join("")}
+
+</table>
+
+<h2>Total: ₹${order.total}</h2>
+
+</body>
+</html>
+
+`);
+
+invoiceWindow.document.close();
+
+invoiceWindow.print();
+
+});
+
+}
+function downloadInvoice(orderId){
+
+window.open(
+"/api/invoice/" + orderId,
+"_blank"
+);
+
+}
+</script>
+
+</body>
+</html>

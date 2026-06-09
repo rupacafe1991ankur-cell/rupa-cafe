@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html>
+<head>
+
+<meta charset="UTF-8">
+
+<title>
+Register - Rupa Cafe
+</title>
+
+<link
+rel="stylesheet"
+href="/css/style.css">
+
+</head>
+
+<body>
+
+<div class="cart-box">
+
+<h2>
+Register
+</h2>
+
+<input
+id="regName"
+placeholder="Name">
+
+<input
+id="regPhone"
+placeholder="Phone">
+
+<input
+id="regEmail"
+placeholder="Email">
+
+<input
+id="regPassword"
+type="password"
+placeholder="Password">
+
+<button
+class="btn"
+onclick="registerUser()">
+
+Register
+
+</button>
+
+</div>
+
+<script>
+
+async function registerUser(){
+
+const res =
+await fetch(
+"/api/register",
+{
+
+method:"POST",
+
+headers:{
+"Content-Type":"application/json"
+},
+
+body:JSON.stringify({
+
+name:
+regName.value,
+
+phone:
+regPhone.value,
+
+email:
+regEmail.value,
+
+password:
+regPassword.value
+
+})
+
+});
+
+const data =
+await res.json();
+
+if(!data.success){
+
+alert(
+data.message
+);
+
+return;
+
+}
+
+alert(
+"Registration Successful"
+);
+
+window.location =
+"/login.html";
+
+}
+
+</script>
+
+</body>
+</html>

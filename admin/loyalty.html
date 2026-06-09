@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+
+<meta charset="UTF-8">
+<title>Loyalty Points</title>
+
+<link
+rel="stylesheet"
+href="/admin/css/style.css">
+
+</head>
+
+<body>
+
+<div class="admin-layout">
+
+<aside class="sidebar">
+
+<h2>Rupa Cafe Admin</h2>
+
+<a href="/admin/dashboard.html">
+Dashboard
+</a>
+
+<a href="/admin/menu.html">
+Food Items
+</a>
+
+<a href="/admin/orders.html">
+Customer Orders
+</a>
+<a href="/admin/reviews.html">
+Customer Reviews
+</a>
+<a href="/admin/coupons.html">
+Coupons
+</a>
+<a href="/admin/loyalty.html">
+Loyalty Points
+</a>
+
+<a href="/admin/site.html">
+Website Settings
+</a>
+
+<a href="/">
+View Frontend
+</a>
+
+<a
+href="#"
+
+onclick="logout()">
+
+Logout
+
+</a>
+
+<script src="/admin/js/admin.js"></script>
+
+</aside>
+
+<main class="main">
+
+<h1>Loyalty Points</h1>
+
+<table>
+
+<thead>
+
+<tr>
+
+<th>Phone Number</th>
+<th>Points</th>
+<th>Tier</th>
+
+</tr>
+
+</thead>
+
+<tbody id="pointsTable">
+
+</tbody>
+
+</table>
+
+</main>
+
+</div>
+
+<script>
+
+async function loadPoints() {
+  const response = await fetch("/api/all-points");
+  const data = await response.json();
+  const pointsTable = document.getElementById("pointsTable");
+
+  pointsTable.innerHTML = data.map(p => {
+    let tier = "Bronze 🥉";
+
+    if (p.points >= 100) tier = "Silver 🥈";
+    if (p.points >= 500) tier = "Gold 🥇";
+    if (p.points >= 1000) tier = "Platinum 💎";
+
+    return `
+      <tr>
+        <td>${p.phone}</td>
+        <td>${p.points}</td>
+        <td>${tier}</td>
+      </tr>
+    `;
+  }).join("");
+}
+
+loadPoints();
+
+</script>
+<script>
+if(localStorage.getItem("darkMode")==="true"){
+    document.body.classList.add("dark-mode");
+}
+</script>
+</body>
+
+</html>

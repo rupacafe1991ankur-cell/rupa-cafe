@@ -1,0 +1,1069 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="UTF-8">
+
+<title>Admin Dashboard</title>
+
+<link
+rel="stylesheet"
+href="/admin/css/style.css">
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+</head>
+
+<body>
+
+<div class="admin-layout">
+
+<aside class="sidebar">
+
+<h2 id="adminName">
+
+Rupa Cafe Admin Panel
+
+</h2>
+
+<a href="/admin/dashboard.html">
+Dashboard
+</a>
+
+<a href="/admin/menu.html">
+Food Items
+</a>
+
+<a href="/admin/orders.html">
+Customer Orders
+</a>
+<a href="/admin/reviews.html">
+Customer Reviews
+</a>
+<a href="/admin/coupons.html">
+Coupons
+</a>
+<a href="/admin/loyalty.html">
+Loyalty Points
+</a>
+
+<a href="/admin/site.html">
+Website Settings
+</a>
+
+<a href="/">
+View Frontend
+</a>
+
+<a
+href="#"
+
+onclick="logout()">
+
+Logout
+
+</a>
+
+</aside>
+
+<main class="main">
+
+<!-- TOP ANALYTICS -->
+<div class="stats-grid">
+
+  <div class="card">
+    <h3>Total Loyalty Customers</h3>
+    <h1 id="totalCustomers">0</h1>
+  </div>
+
+  <div class="card">
+    <h3>Total Points Issued</h3>
+    <h1 id="totalPoints">0</h1>
+  </div>
+
+  <div class="card">
+    <h3>Top Customer</h3>
+    <h1 id="topCustomer">-</h1>
+  </div>
+
+  <div class="card">
+    <h3>Total Revenue</h3>
+    <h1 id="totalRevenue">₹0</h1>
+  </div>
+
+  <div class="card">
+    <h3>👑 VIP Customer</h3>
+    <h1 id="vipCustomer">-</h1>
+    <p id="vipSpend">₹0</p>
+    <p id="vipOrders">0 Orders</p>
+  </div>
+
+  <div class="card">
+    <h3>📅 Peak Business Hour</h3>
+    <h1 id="peakHour">-</h1>
+    <p id="peakOrders">0 Orders</p>
+  </div>
+
+  <div class="card">
+    <h3>💰 Most Profitable Food</h3>
+    <h1 id="mostProfitableFood">-</h1>
+    <p id="mostProfitableRevenue">₹0</p>
+  </div>
+ <div class="card">
+  <h2>🍽 Top 5 Foods</h2>
+  <div id="topFoodsList">Loading...</div>
+</div>
+</div>
+
+<h1>Dashboard</h1>
+<div class="card" style="margin:20px 0;padding:20px;">
+  <h2>🏪 Store Control</h2>
+
+  <button
+    id="storeToggleBtn"
+    class="btn"
+    onclick="toggleStoreStatus()">
+
+    Loading...
+
+  </button>
+
+  <p id="storeStatusText"></p>
+
+  <button
+id="deliveryToggleBtn"
+class="btn"
+onclick="toggleDeliveryStatus()">
+
+Loading...
+
+</button>
+
+<p id="deliveryStatusText"></p>
+</div>
+<button class="btn" onclick="downloadReport()">
+📄 Download Sales Report
+</button>
+
+<button class="btn" onclick="toggleDarkMode()">
+🌙 Dark Mode
+</button>
+
+<br><br>
+
+<div class="stats">
+    
+<div class="stat">
+    <h2 id="reviewCount">0</h2>
+    <p>Total Reviews</p>
+</div>
+  <div class="stat">
+    <h2 id="paidOrders">0</h2>
+    <p>Paid Orders</p>
+ </div>
+
+<div class="stat">
+  <h2 id="pendingPayments">0</h2>
+  <div class="stat">
+  <h2 id="counterOrders">0</h2>
+  <p>Pay At Counter</p>
+</div>
+
+  <p>Pending Payments</p>
+</div>
+  <div class="stat">
+    <h2 id="approvedReviewCount">0</h2>
+    <p>Approved Reviews</p>
+  </div>
+
+  <div class="stat">
+    <h2 id="pendingReviewCount">0</h2>
+    <p>Pending Reviews</p>
+  </div>
+
+  <div class="stat">
+    <h2 id="bestSellerCount">0</h2>
+    <p>Best Sellers</p>
+  </div>
+
+  <div class="stat">
+    <h2 id="popularCount">0</h2>
+    <p>Popular Items</p>
+  </div>
+
+  <div class="stat">
+    <h2 id="foodCount">0</h2>
+    <p>Food Items</p>
+  </div>
+
+  <div class="stat">
+    <h2 id="orderCount">0</h2>
+    <p>Customer Orders</p>
+  </div>
+
+  <div class="stat">
+    <h2 id="availableCount">0</h2>
+    <p>Available Food</p>
+  </div>
+
+  <div class="stat">
+    <h2 id="tableCount">0</h2>
+    <p>Tables Used</p>
+  </div>
+
+  <div class="stat">
+    <h2 id="todayOrders">0</h2>
+    <p>Today's Orders</p>
+  </div>
+
+  <div class="stat">
+    <h2 id="todayRevenue">₹0</h2>
+    <p>Today's Revenue</p>
+  </div>
+
+  <div class="stat">
+    <h2 id="monthlyRevenue">₹0</h2>
+    <p>Monthly Revenue</p>
+  </div>
+
+  <div class="stat">
+    <h2 id="avgOrderValue">₹0</h2>
+    <p>Average Order</p>
+  </div>
+
+  <div class="stat">
+    <h2 id="topFood">-</h2>
+    <p>Top Food</p>
+  </div>
+
+</div>
+
+<br>
+
+<div class="analytics-grid">
+
+  <div class="card">
+    <h2>🏆 Top Customers</h2>
+    <div id="topCustomersList">Loading...</div>
+  </div>
+
+  <div class="card">
+    <h2>🏆 Loyalty Leaderboard</h2>
+    <div id="loyaltyLeaderboard">Loading...</div>
+  </div>
+
+  <div class="card">
+    <h2>🎟 Coupon Usage</h2>
+    <div id="couponUsage">Loading...</div>
+  </div>
+
+</div>
+
+<br>
+
+<div class="table-wrap">
+<table>
+<thead>
+<tr>
+<th>Feature</th>
+<th>Status</th>
+</tr>
+</thead>
+
+<tbody>
+<tr><td>Frontend</td><td>Running</td></tr>
+<tr><td>Backend</td><td>Running</td></tr>
+<tr><td>Order Tracking</td><td>Enabled</td></tr>
+<tr><td>Table System</td><td>Enabled</td></tr>
+<tr><td>Admin Panel</td><td>Running</td></tr>
+</tbody>
+</table>
+</div>
+
+<br>
+
+<div class="chart-card">
+
+<button class="btn" onclick="updateRevenueStats('today')">
+Today
+</button>
+
+<button class="btn" onclick="updateRevenueStats('week')">
+Week
+</button>
+
+<button class="btn" onclick="updateRevenueStats('month')">
+Month
+</button>
+
+<button class="btn" onclick="updateRevenueStats('year')">
+Year
+</button>
+
+<br><br>
+
+<div class="stat">
+<h3>Selected Revenue</h3>
+<h1 id="selectedRevenue">₹0</h1>
+<p id="selectedOrders">0 Orders</p>
+</div>
+
+<h2>Revenue Chart</h2>
+
+<canvas id="revenueChart"></canvas>
+
+</div>
+
+</main>
+</div>
+
+<script
+src="/admin/js/admin.js">
+
+</script>
+
+<script>
+
+async function loadDashboard(){
+
+const site=
+
+await fetch(
+
+"/api/site"
+
+)
+
+.then(
+
+r=>r.json()
+
+)
+
+adminName.innerText=
+
+site.adminName||
+
+"Rupa Cafe Admin Panel"
+
+const menu=
+
+await fetch(
+
+"/api/menu"
+
+)
+
+.then(
+
+r=>r.json()
+
+)
+
+const orders=
+await fetch(
+"/api/orders",
+{
+headers:{
+"x-admin-key":
+localStorage.getItem("adminKey")
+}
+}
+).then(r=>r.json());
+const revenueMap = {};
+const hourMap = {};
+
+orders.forEach(order=>{
+if(order.time){
+
+const hour =
+
+new Date(order.time)
+.getHours();
+
+hourMap[hour] =
+
+(hourMap[hour] || 0) + 1;
+
+}
+const day =
+new Date(
+order.time
+).toLocaleDateString();
+
+revenueMap[day] =
+
+(revenueMap[day] || 0)
+
++
+
+Number(
+order.total || 0
+);
+
+});
+const reviews=
+await fetch("/api/reviews")
+.then(r=>r.json());
+reviewCount.innerText =
+reviews.length;
+
+approvedReviewCount.innerText =
+reviews.filter(
+r => r.approved === true
+).length;
+
+pendingReviewCount.innerText =
+reviews.filter(
+r => r.approved !== true
+).length;
+
+bestSellerCount.innerText =
+menu.filter(
+m => m.bestSeller === true
+).length;
+
+popularCount.innerText =
+menu.filter(
+m => m.popular === true
+).length;
+
+foodCount.innerText=
+
+menu.length
+
+orderCount.innerText=
+
+orders.length
+
+availableCount.innerText=
+
+menu.filter(
+
+x=>
+
+x.available!==false
+
+).length
+
+const tables=
+
+[
+
+...new Set(
+
+orders
+
+.map(
+
+o=>
+
+o.tableNumber
+
+)
+
+.filter(
+
+Boolean
+
+)
+
+)
+
+]
+
+tableCount.innerText=
+
+tables.length
+const today =
+new Date().toLocaleDateString();
+
+const todayOrdersData =
+orders.filter(order =>
+order.time &&
+order.time.includes(today)
+);
+
+todayOrders.innerText =
+todayOrdersData.length;
+
+const todayRevenueValue =
+todayOrdersData.reduce(
+(sum,order)=>
+sum + Number(order.total || 0),
+0
+);
+
+todayRevenue.innerText =
+"₹" + todayRevenueValue;
+
+const currentMonth =
+new Date().getMonth();
+
+const currentYear =
+new Date().getFullYear();
+
+const monthlyOrders =
+orders.filter(order=>{
+
+if(!order.time) return false;
+
+const d =
+new Date(order.time);
+
+return (
+d.getMonth() === currentMonth &&
+d.getFullYear() === currentYear
+);
+
+});
+
+const monthlyRevenueValue =
+monthlyOrders.reduce(
+(sum,order)=>
+sum + Number(order.total || 0),
+0
+);
+
+monthlyRevenue.innerText =
+"₹" + monthlyRevenueValue;
+
+const avg =
+orders.length
+?
+Math.round(
+orders.reduce(
+(s,o)=>
+s + Number(o.total || 0),
+0
+) / orders.length
+)
+: 0;
+
+avgOrderValue.innerText =
+"₹" + avg;
+const revenueByFood = {};
+const foodCounter = {};
+
+orders.forEach(order=>{
+
+(order.items || [])
+.forEach(item=>{
+
+foodCounter[item.name] =
+(foodCounter[item.name] || 0) + 1;
+
+revenueByFood[item.name] =
+
+(revenueByFood[item.name] || 0)
+
++
+
+Number(item.price || 0);
+
+});
+
+});
+
+const top =
+Object.keys(foodCounter)
+.sort(
+(a,b)=>
+foodCounter[b] -
+foodCounter[a]
+)[0];
+
+topFood.innerText =
+top || "-";
+const profitableFood =
+
+Object.keys(revenueByFood)
+
+.sort(
+(a,b)=>
+revenueByFood[b] -
+revenueByFood[a]
+)[0];
+
+document.getElementById(
+"mostProfitableFood"
+).innerText =
+
+profitableFood || "-";
+
+document.getElementById(
+"mostProfitableRevenue"
+).innerText =
+
+"₹" +
+
+(
+revenueByFood[
+profitableFood
+] || 0
+);
+const chartCanvas =
+document.getElementById(
+"revenueChart"
+);
+
+if(chartCanvas){
+
+new Chart(
+chartCanvas,
+{
+
+type:"line",
+
+data:{
+
+labels:
+Object.keys(
+revenueMap
+),
+
+datasets:[{
+
+label:
+"Revenue",
+
+data:
+Object.values(
+revenueMap
+)
+
+}]
+
+}
+
+});
+
+}
+const topCustomers =
+await fetch(
+"/api/top-customers"
+)
+.then(r=>r.json());
+if(topCustomers.length){
+
+const vip =
+topCustomers[0];
+
+document.getElementById(
+"vipCustomer"
+).innerText =
+vip.phone;
+
+document.getElementById(
+"vipSpend"
+).innerText =
+"₹" + vip.total;
+
+const vipOrdersCount =
+
+orders.filter(
+o =>
+o.phone === vip.phone
+).length;
+
+document.getElementById(
+"vipOrders"
+).innerText =
+
+vipOrdersCount +
+" Orders";
+
+}
+
+document.getElementById(
+"topCustomersList"
+).innerHTML =
+
+topCustomers.map((c,index)=>`
+
+<p>
+${index+1}. ${c.phone} - ₹${c.total}
+</p>
+
+`).join("");
+const loyaltyData =
+await fetch(
+"/api/loyalty-leaderboard"
+)
+.then(r=>r.json());
+
+document.getElementById(
+"loyaltyLeaderboard"
+).innerHTML =
+
+loyaltyData.map((p,index)=>`
+
+<p>
+
+${index===0 ? "🥇" :
+
+index===1 ? "🥈" :
+
+index===2 ? "🥉" :
+
+"🏅"}
+
+${p.phone}
+
+-
+
+${p.points} Points
+
+</p>
+
+`).join("");
+const couponStats =
+await fetch(
+"/api/coupon-analytics"
+)
+.then(r=>r.json());
+
+document.getElementById(
+"couponUsage"
+).innerHTML =
+Object.entries(couponStats)
+.map(c =>
+`<p>${c[0]} - ${c[1]} Uses</p>`
+)
+.join("");
+const peakHour =
+Object.keys(hourMap)
+
+.sort(
+(a,b)=>
+hourMap[b] -
+hourMap[a]
+)[0];
+
+if(peakHour !== undefined){
+
+document.getElementById(
+"peakHour"
+).innerText =
+
+peakHour +
+":00 - " +
+(Number(peakHour)+1) +
+":00";
+
+document.getElementById(
+"peakOrders"
+).innerText =
+
+hourMap[peakHour] +
+" Orders";
+
+}
+
+}
+
+loadDashboard()
+setInterval(() => {
+
+loadDashboard();
+
+loadStats();
+
+}, 10000);
+</script>
+<script>
+
+async function loadStats(){
+
+const data =
+await fetch(
+"/api/dashboard-stats"
+)
+.then(r=>r.json());
+
+document.getElementById(
+"totalCustomers"
+).innerText =
+data.totalCustomers;
+
+document.getElementById(
+"totalPoints"
+).innerText =
+data.totalPointsIssued;
+
+document.getElementById(
+"topCustomer"
+).innerText =
+data.topCustomer;
+
+document.getElementById(
+"totalRevenue"
+).innerText =
+"₹" +
+data.totalRevenue;
+
+}
+
+loadStats();
+updateRevenueStats("today");
+window.addEventListener("load",()=>{
+
+if(
+localStorage.getItem("darkMode")==="true"
+){
+
+document.body.classList.add(
+"dark-mode"
+);
+
+}
+
+});
+
+</script>
+
+<script>
+
+function downloadReport(){
+
+window.open(
+"/api/download-report",
+"_blank"
+);
+
+}
+
+</script> 
+<script>
+
+function toggleDarkMode(){
+
+document.body.classList.toggle(
+"dark-mode"
+);
+
+const isDark =
+document.body.classList.contains(
+"dark-mode"
+);
+
+localStorage.setItem(
+"darkMode",
+isDark ? "true" : "false"
+);
+
+}
+async function updateRevenueStats(type){
+
+const orders =
+await fetch(
+"/api/orders",
+{
+headers:{
+"x-admin-key":
+localStorage.getItem("adminKey")
+}
+}
+).then(r=>r.json());
+
+const paidOrders =
+orders.filter(
+o => o.paymentStatus === "Paid"
+).length;
+
+const counterOrders =
+orders.filter(
+o =>
+o.paymentMethod === "counter"
+).length;
+
+const pendingPayments =
+orders.filter(
+o =>
+o.paymentMethod === "counter"
+&&
+o.paymentStatus !== "Paid"
+).length;
+
+document.getElementById(
+"paidOrders"
+).innerText =
+paidOrders;
+
+document.getElementById(
+"pendingPayments"
+).innerText =
+pendingPayments;
+
+document.getElementById(
+"counterOrders"
+).innerText =
+counterOrders;
+
+let filtered = [];
+
+const now = new Date();
+
+if(type === "today"){
+
+filtered = orders.filter(o => {
+
+const d = new Date(o.time);
+
+return d.toDateString() ===
+now.toDateString();
+
+});
+
+}
+
+if(type === "week"){
+
+filtered = orders.filter(o => {
+
+const d = new Date(o.time);
+
+const diff =
+(now - d) /
+(1000*60*60*24);
+
+return diff <= 7;
+
+});
+
+}
+
+if(type === "month"){
+
+filtered = orders.filter(o => {
+
+const d = new Date(o.time);
+
+return (
+
+d.getMonth() ===
+now.getMonth()
+
+&&
+
+d.getFullYear() ===
+now.getFullYear()
+
+);
+
+});
+
+}
+
+if(type === "year"){
+
+filtered = orders.filter(o => {
+
+const d = new Date(o.time);
+
+return (
+d.getFullYear() ===
+now.getFullYear()
+);
+
+});
+
+}
+
+const revenue =
+
+filtered.reduce(
+(sum,o)=>
+sum + Number(o.total || 0),
+0
+);
+
+document.getElementById(
+"selectedRevenue"
+).innerText =
+
+"₹" + revenue;
+
+document.getElementById(
+"selectedOrders"
+).innerText =
+
+filtered.length + " Orders";
+
+}
+</script>
+  <script>
+
+async function loadDeliveryStatus(){
+
+const site =
+await fetch("/api/site")
+.then(r=>r.json());
+
+const btn =
+document.getElementById(
+"deliveryToggleBtn"
+);
+
+const text =
+document.getElementById(
+"deliveryStatusText"
+);
+
+if(site.deliveryEnabled !== false){
+
+btn.innerText =
+"🚚 Disable Home Delivery";
+
+text.innerHTML =
+"<b style='color:green'>Home Delivery ON</b>";
+
+}else{
+
+btn.innerText =
+"🔓 Enable Home Delivery";
+
+text.innerHTML =
+"<b style='color:red'>Home Delivery OFF</b>";
+
+}
+
+}
+
+async function toggleDeliveryStatus(){
+
+const site =
+await fetch("/api/site")
+.then(r=>r.json());
+
+site.deliveryEnabled =
+!(site.deliveryEnabled !== false);
+
+await fetch("/api/site",{
+
+method:"PUT",
+
+headers:{
+"Content-Type":
+"application/json",
+
+"x-admin-key":
+localStorage.getItem("adminKey")
+},
+
+body:
+JSON.stringify(site)
+
+});
+
+loadDeliveryStatus();
+
+}
+
+loadDeliveryStatus();
+
+</script>
+</body>
+
+</html>

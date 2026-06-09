@@ -1,0 +1,902 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Customer Orders</title>
+  <link rel="stylesheet" href="/admin/css/style.css">
+</head>
+
+<body>
+
+<div class="admin-layout">
+
+  <aside class="sidebar">
+    <h2 id="adminName">Rupa Cafe Admin Panel</h2>
+
+    <a href="/admin/dashboard.html">
+Dashboard
+</a>
+
+<a href="/admin/menu.html">
+Food Items
+</a>
+
+<a href="/admin/orders.html">
+Customer Orders
+</a>
+<a href="/admin/reviews.html">
+Customer Reviews
+</a>
+<a href="/admin/coupons.html">
+Coupons
+</a>
+<a href="/admin/loyalty.html">
+Loyalty Points
+</a>
+
+<a href="/admin/site.html">
+Website Settings
+</a>
+
+<a href="/">
+View Frontend
+</a>
+
+<a
+href="#"
+
+onclick="logout()">
+
+Logout
+
+</a>
+
+
+  </aside>
+
+  <main class="main">
+
+    <div
+id="newOrderAlert"
+style="
+display:none;
+background:#16a34a;
+color:white;
+padding:10px;
+margin-bottom:15px;
+border-radius:8px;
+font-weight:bold;
+">
+🔔 New Order Received!
+</div>
+
+<h1>Customer Orders</h1>
+<div class="queue-grid">
+
+<div class="card">
+<h2>🟡 New Orders</h2>
+<div id="newOrdersQueue">
+Loading...
+</div>
+</div>
+
+<div class="card">
+<h2>🟠 Preparing</h2>
+<div id="preparingQueue">
+Loading...
+</div>
+</div>
+
+<div class="card">
+<h2>🟢 Ready</h2>
+<div id="readyQueue">
+Loading...
+</div>
+</div>
+
+</div>
+
+<br>
+<span
+style="
+background:#16a34a;
+color:white;
+padding:4px 10px;
+border-radius:20px;
+font-size:12px;
+margin-left:10px;
+">
+LIVE
+</span>
+
+</h1>
+<div class="stats" style="margin:20px 0;">
+
+<div class="stat">
+<h3 id="todayOrders">0</h3>
+<p>Today's Orders</p>
+</div>
+
+<div class="stat">
+<h3 id="todayRevenue">₹0</h3>
+<p>Today's Revenue</p>
+</div>
+
+<div class="stat">
+<h3 id="pendingOrders">0</h3>
+<p>Pending Orders</p>
+</div>
+
+</div>
+     <label>
+<b>🔍 Search Orders</b>
+</label>
+
+<input
+type="text"
+id="orderSearch"
+placeholder="Order ID / Customer / Phone"
+oninput="loadOrders()">
+
+<br><br>
+    <label><b>Sort / Filter by Table Number</b></label>
+
+    <select id="tableSort" onchange="loadOrders()">
+      <option value="">All Tables</option>
+    </select>
+
+    <br><br>
+
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Order ID</th>
+            <th>Order Type</th>
+            <th>Table No.</th>
+            <th>Customer</th>
+            <th>Food Items</th>
+            <th>Delivery</th>
+            <th>Total</th>
+            <th>Coupon</th>
+            <th>Status</th>
+            <th>Action</th>
+          </tr>
+        </thead>
+
+        <tbody id="orderRows"></tbody>
+      </table>
+    </div>
+
+  </main>
+
+</div>
+
+<script src="/admin/js/admin.js"></script>
+
+<script>
+if(localStorage.getItem("darkMode")==="true"){
+    document.body.classList.add("dark-mode");
+}
+</script>
+
+<script>
+  let lastOrderCount = 0;
+async function loadAdminName(){
+  const site = await fetch("/api/site").then(r => r.json());
+  document.getElementById("adminName").innerText =
+  site.adminName || "Rupa Cafe Admin Panel";
+}
+
+async function loadOrders(){
+
+  let orders = await fetch(
+"/api/orders",
+{
+headers:{
+"x-admin-key":
+localStorage.getItem("adminKey")
+}
+}
+).then(r=>r.json());
+  const searchValue =
+
+document
+.getElementById(
+"orderSearch"
+)
+?.value
+?.toLowerCase()
+|| "";
+  if(
+lastOrderCount > 0 &&
+orders.length > lastOrderCount
+){
+
+const sound =
+document.getElementById(
+"newOrderSound"
+);
+
+if(sound){
+
+sound.play().catch(() => {});
+const alertBox =
+document.getElementById(
+"newOrderAlert"
+);
+
+if(alertBox){
+
+alertBox.style.display =
+"block";
+
+setTimeout(() => {
+
+alertBox.style.display =
+"none";
+
+}, 5000);
+
+}
+
+}
+
+}
+
+lastOrderCount =
+orders.length;
+
+  const tableSort = document.getElementById("tableSort");
+  const selectedTable = tableSort.value;
+
+  const tables = [
+    ...new Set(
+      orders
+      .map(o => o.tableNumber)
+      .filter(t => t !== undefined && t !== null && t !== "")
+    )
+  ];
+
+  tableSort.innerHTML =
+    `<option value="">All Tables</option>` +
+    tables.map(t =>
+      `<option value="${t}" ${selectedTable == t ? "selected" : ""}>
+        Table ${t}
+      </option>`
+    ).join("");
+
+  if(selectedTable !== ""){
+    orders = orders.filter(o => String(o.tableNumber) === String(selectedTable));
+  }
+  if(searchValue){
+
+orders = orders.filter(o =>
+
+String(o.id)
+.toLowerCase()
+.includes(searchValue)
+
+||
+
+String(o.customer || "")
+.toLowerCase()
+.includes(searchValue)
+
+||
+
+String(o.phone || "")
+.toLowerCase()
+.includes(searchValue)
+
+);
+
+}
+
+  orders.sort((a,b) => {
+    return Number(a.tableNumber || 0) - Number(b.tableNumber || 0);
+  });
+  const today = new Date().toLocaleDateString();
+  const orderRows = document.getElementById("orderRows");
+const newOrders =
+orders.filter(
+o =>
+o.status === "Pending"
+);
+
+const preparingOrders =
+orders.filter(
+o =>
+o.status === "Accepted"
+||
+o.status === "Preparing"
+);
+
+const readyOrders =
+orders.filter(
+o =>
+o.status === "Ready"
+);
+
+document.getElementById(
+"preparingQueue"
+).innerHTML =
+
+preparingOrders.map(o=>`
+
+<div class="queue-item">
+
+<b>
+#${String(o.id).slice(-5)}
+</b>
+
+<br>
+
+${o.customer}
+
+<br>
+
+💰 ₹${o.total}
+
+</div>
+
+`).join("");
+
+document.getElementById(
+"readyQueue"
+).innerHTML =
+
+readyOrders.map(o=>`
+
+<div class="queue-item">
+
+<b>
+#${String(o.id).slice(-5)}
+</b>
+
+<br>
+
+${o.customer}
+
+<br>
+
+💰 ₹${o.total}
+
+</div>
+
+`).join("");
+
+
+
+document.getElementById(
+"newOrdersQueue"
+).innerHTML =
+
+newOrders.map(o=>`
+<div class="queue-item">
+<b>#${String(o.id).slice(-5)}</b>
+&nbsp; ₹${o.total}
+</div>
+`).join("");
+
+
+const todayOrdersCount =
+orders.filter(o =>
+(o.time || "").includes(today)
+).length;
+
+const todayRevenueCount =
+orders
+.filter(o =>
+(o.time || "").includes(today)
+)
+.reduce(
+(sum,o)=>
+sum + Number(o.total || 0),
+0
+);
+
+const pendingCount =
+orders.filter(o =>
+o.status !== "Delivered" &&
+o.status !== "Cancelled"
+).length;
+
+document.getElementById(
+"todayOrders"
+).innerText =
+todayOrdersCount;
+
+document.getElementById(
+"todayRevenue"
+).innerText =
+"₹" + todayRevenueCount;
+
+document.getElementById(
+"pendingOrders"
+).innerText =
+pendingCount;
+
+  if(orders.length === 0){
+    orderRows.innerHTML = `
+      <tr>
+        <td colspan="9">No orders found.</td>
+      </tr>
+    `;
+    return;
+  }
+
+  orderRows.innerHTML = orders.map(o => `
+    <tr>
+
+      <td>
+        <b>#${o.id}</b><br>
+        <small>${o.time || ""}</small>
+      </td>
+      <td>
+
+        ${o.orderType || "dinein"}
+
+      </td>
+
+      <td>
+        <b>
+
+        ${o.orderType === "delivery"
+        ? "Home Delivery"
+        : "Table " + (o.tableNumber || "N/A")}
+
+        </b>
+      </td>
+
+      <td>
+
+        <b>${o.customer || "N/A"}</b><br>
+
+        Phone: ${o.phone || "N/A"}<br>
+
+        <small>
+
+          ${o.address || ""}
+
+          <br>
+
+          Landmark:
+          ${o.landmark || "N/A"}
+
+        </small>
+
+      </td>
+
+     <td>
+      
+  ${(o.items || []).map(i => `
+    <div style="
+    background:#f8fafc;
+    padding:8px;
+    margin-bottom:6px;
+    border-radius:8px;
+    border-left:4px solid #16a34a;
+    ">
+      <b>${i.name}</b><br>
+
+      <small>
+      Qty: ${i.qty || 1}
+      × ₹${i.price}
+      =
+      ₹${(i.qty || 1) * Number(i.price || 0)}
+      </small>
+    </div>
+  `).join("")}
+</td>
+
+
+      <td>
+      Charge:
+      ₹${o.deliveryCharge || 0}
+
+      <br><br>
+
+      ${o.latitude && o.longitude ?
+
+      `<a
+      target="_blank"
+      href="https://maps.google.com/?q=${o.latitude},${o.longitude}">
+      Open Map
+      </a>`
+
+      :
+
+      "N/A"
+
+      }
+
+      </td>
+      <td>
+
+<div
+style="
+background:#f8fff5;
+padding:12px;
+border-radius:10px;
+border:2px solid #16a34a;
+">
+
+<div>
+🍽 Food:
+₹${
+(o.items || [])
+.reduce(
+(sum,i)=>
+sum +
+(Number(i.price) * (i.qty || 1)),
+0
+)
+}
+</div>
+
+<div>
+🛵 Delivery:
+₹${o.deliveryCharge || 0}
+</div>
+
+<hr>
+
+<div
+style="
+font-size:18px;
+font-weight:bold;
+color:#16a34a;
+">
+
+💰 ₹${o.total || 0}
+<hr>
+
+<div
+style="
+font-size:14px;
+font-weight:bold;
+margin-top:8px;
+color:
+${o.paymentStatus === "Paid"
+?
+"#16a34a"
+:
+"#dc2626"
+};
+">
+
+${
+
+o.paymentStatus === "Paid"
+
+?
+
+"✅ Payment Paid"
+
+:
+
+"⏳ Payment Pending"
+
+}
+
+</div>
+</div>
+
+</div>
+
+</td>
+<td>
+
+${o.coupon
+
+?
+
+`<span style="
+background:#fff3cd;
+color:#856404;
+padding:6px 10px;
+border-radius:8px;
+font-weight:bold;
+display:inline-block;
+">
+
+🏷 ${o.coupon}
+
+<br>
+
+<small>
+₹${o.couponDiscount || 0} OFF
+</small>
+
+</span>`
+
+:
+
+`<span style="color:#999;">
+No Coupon
+</span>`
+
+}
+
+</td>
+      <td>
+
+<b>${o.status || "Pending"}</b>
+
+<br>
+<div style="margin-bottom:8px;">
+
+${
+
+o.paymentStatus === "Paid"
+?
+''
+:
+
+o.paymentMethod === "counter"
+
+?
+
+'<span style="background:#f59e0b;color:white;padding:4px 10px;border-radius:20px;font-size:12px;">💵 Counter</span>'
+
+:
+
+'<span style="background:#dc2626;color:white;padding:4px 10px;border-radius:20px;font-size:12px;">⏳ Pending Payment</span>'
+
+}
+
+</div>
+
+<small>
+
+${
+
+o.status === "Pending"
+? "⏳ 20 min"
+
+:
+
+o.status === "Accepted"
+? "⏳ 15 min"
+
+:
+
+o.status === "Preparing"
+? "⏳ 10 min"
+
+:
+
+o.status === "Ready"
+? "✅ Ready"
+
+:
+
+o.status === "Delivered"
+? "✔ Delivered"
+
+:
+
+ "❌ Cancelled"
+
+}
+
+</small>
+
+</td>
+
+      <td>
+        <select onchange="changeStatus(${o.id}, this.value)">
+
+        <option ${o.status === "Pending" ? "selected" : ""}>
+          Pending
+        </option>
+
+        <option ${o.status === "Accepted" ? "selected" : ""}>
+          Accepted
+        </option>
+
+        <option ${o.status === "Preparing" ? "selected" : ""}>
+          Preparing
+        </option>
+        <option ${o.status === "Ready" ? "selected" : ""}>
+Ready
+</option>
+
+        <option ${o.status === "Out For Delivery" ? "selected" : ""}>
+          Out For Delivery
+        </option>
+
+        <option ${o.status === "Delivered" ? "selected" : ""}>
+          Delivered
+        </option>
+
+        <option ${o.status === "Cancelled" ? "selected" : ""}>
+          Cancelled
+        </option>
+
+        </select>
+
+        <br><br>
+
+        <button onclick="deleteOrder(${o.id})">
+          Delete
+        </button>
+        <button
+class="btn green"
+onclick="sendWhatsApp(
+'${o.phone}',
+'${o.id}',
+'${o.status}'
+)">
+
+📲 WhatsApp Customer
+
+</button>
+<br><br>
+
+${
+
+o.paymentStatus !== "Paid"
+
+?
+
+`
+
+<button
+class="btn"
+style="
+background:#16a34a;
+color:white;
+border:none;
+padding:8px 12px;
+font-size:13px;
+border-radius:8px;
+font-weight:bold;
+cursor:pointer;
+width:100%;
+"
+onclick="
+markPaymentPaid(${o.id})
+">
+
+💰 Payment Done
+
+</button>
+
+`
+
+:
+
+`
+
+<div
+style="
+background:#16a34a;
+color:white;
+padding:8px;
+border-radius:8px;
+font-weight:bold;
+text-align:center;
+">
+
+✅ Paid
+
+</div>
+
+`
+
+}
+      </td>
+
+    </tr>
+  `).join("");
+}
+
+async function changeStatus(id, status){
+
+  await fetch("/api/orders/" + id + "/status", {
+    method: "PUT",
+    headers: {
+      "Content-Type": "application/json",
+      "x-admin-key":
+      localStorage.getItem("adminKey")
+    },
+    body: JSON.stringify({
+      status: status
+    })
+  });
+
+  loadOrders();
+}
+
+async function deleteOrder(id){
+
+  if(confirm("Delete this order?")){
+
+    await fetch("/api/orders/" + id, {
+      method: "DELETE",
+      headers:{
+        "x-admin-key":
+        localStorage.getItem("adminKey")
+      }
+    });
+
+    loadOrders();
+  }
+}
+function sendWhatsApp(phone,orderId,status){
+
+const cleanPhone =
+String(phone).replace(/\D/g,'');
+
+const msg =
+
+`☕ Rupa Cafe
+
+Hello Customer,
+
+Your Order #${orderId}
+
+Status:
+${status}
+
+Thank you for choosing Rupa Cafe ❤️`;
+
+window.open(
+"https://wa.me/91" +
+cleanPhone +
+"?text=" +
+encodeURIComponent(msg),
+"_blank"
+);
+
+}
+
+async function markPaymentPaid(id){
+
+if(
+!confirm(
+"Mark payment as paid?"
+)
+){
+return;
+}
+
+await fetch(
+"/api/orders/" + id + "/payment",
+{
+method:"PUT",
+
+headers:{
+"x-admin-key":
+localStorage.getItem("adminKey")
+}
+}
+);
+
+loadOrders();
+
+}
+
+loadAdminName();
+loadOrders();
+
+setInterval(() => {
+  loadOrders();
+}, 10000);
+</script>
+
+
+</script>
+<audio
+id="newOrderSound"
+preload="auto">
+
+<source
+src="/sounds/beep.mp3"
+type="audio/mpeg" />
+
+</audio>
+</body>
+</html>

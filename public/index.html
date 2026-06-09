@@ -1,0 +1,744 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <title>Rupa Cafe</title>
+
+    <link rel="stylesheet" href="/css/style.css">
+
+</head>
+
+<body>
+    <div
+id="storeClosedOverlay"
+style="
+display:none;
+position:fixed;
+top:0;
+left:0;
+width:100%;
+height:100%;
+background:rgba(0,0,0,.85);
+z-index:999999;
+justify-content:center;
+align-items:center;
+flex-direction:column;
+color:white;
+text-align:center;
+">
+
+<h1 style="font-size:50px;">
+🚫 Store Closed
+</h1>
+
+<h2>
+Come Back Tomorrow
+</h2>
+
+</div>
+    <header class="header">
+
+        <div class="logo" id="siteName">
+
+            Rupa Cafe
+
+        </div>
+        <a
+id="deliveryBtn"
+href="#cart"
+class="delivery-pill"
+onclick="goDelivery()">
+
+🛵 DELIVERY
+
+</a>        <div class="menu-toggle" onclick="toggleMenu()">
+            ☰
+        </div>
+
+
+        <button class="dinein-btn" onclick="goDineIn()">
+
+            🍽 Dine In
+
+        </button>
+
+        <nav class="nav">
+            <a href="/login.html">
+                Login
+            </a>
+            <a href="/account.html">
+                My Account
+            </a>
+            <a href="#" onclick="logoutUser()">
+
+                Logout
+
+            </a>
+
+            <a href="/">Home</a>
+
+            <a href="#menu">
+                Menu
+            </a>
+
+            <a href="#cart">
+                Cart
+            </a>
+
+            <a href="#track">
+                Track Order
+            </a>
+
+            <a href="#contact">
+                Contact
+            </a>
+
+        </nav>
+
+    </header>
+
+    <section class="hero" id="heroSlider">
+
+        <div class="hero-overlay">
+
+            <h1 id="sliderTitle">
+                Welcome to Rupa Cafe
+            </h1>
+
+            <p id="sliderText">
+                Fresh Coffee • Delicious Food • Memorable Moments
+            </p>
+
+            <a href="#menu" class="hero-btn">
+                Explore Menu
+            </a>
+
+        </div>
+
+    </section>
+    <section class="section center">
+
+        <h1 id="heroTitle">
+            Fresh Indian Food Like Haldiram
+        </h1>
+
+        <p id="heroText">
+            Sweets • Snacks • Chaat • Thali
+        </p>
+
+        <button class="btn" onclick="document.getElementById('menu').scrollIntoView()">
+            View Menu
+        </button>
+
+    </section>
+    <section>
+
+        <div id="featuredCoupon" class="featured-offer">
+
+            🔥 Loading Offer...
+
+        </div>
+
+    </section>
+    <section class="section reveal">
+
+        <h2 class="center">
+            🔥 Best Sellers
+        </h2>
+
+        <div id="bestSellerList" class="menu-grid">
+
+        </div>
+
+    </section>
+    <section class="section">
+
+        <h2 class="center">
+            📈 Rupa Cafe In Numbers
+        </h2>
+
+        <div class="stats">
+
+            <div class="stat">
+                <h2>1200+</h2>
+                <p>Orders Served</p>
+            </div>
+
+            <div class="stat">
+                <h2>4.9⭐</h2>
+                <p>Customer Rating</p>
+            </div>
+
+            <div class="stat">
+                <h2>50+</h2>
+                <p>Menu Items</p>
+            </div>
+
+            <div class="stat">
+                <h2>5 Years</h2>
+                <p>Experience</p>
+            </div>
+
+
+    </section>
+    <section class="section center">
+
+        <div class="special-offer-banner">
+
+            <h2>
+                🔥 TODAY'S SPECIAL OFFER 🔥
+            </h2>
+
+            <p id="offerText">
+                Buy 1 Get 1 Free
+            </p>
+
+        </div>
+
+    </section>
+    <section class="section">
+
+        <h2 class="center">
+            🎁 Today's Deals
+        </h2>
+        <div id="couponDeals" class="menu-grid">
+
+            Loading...
+
+        </div>
+
+    </section>
+
+    <section class="section">
+
+        <h2 class="center">
+            Why Choose Us?
+        </h2>
+
+        <div class="stats">
+
+            <div class="stat">
+                <h2>☕</h2>
+                <p>Fresh Ingredients</p>
+            </div>
+
+            <div class="stat">
+                <h2>⚡</h2>
+                <p>Fast Service</p>
+            </div>
+
+            <div class="stat">
+                <h2>🎁</h2>
+                <p>Loyalty Rewards</p>
+            </div>
+
+            <div class="stat">
+                <h2>❤️</h2>
+                <p>Loved By Customers</p>
+            </div>
+
+
+    </section>
+    <section id="menu" class="section reveal">
+
+        <h2 class="center">
+
+            Our Menu
+
+        </h2>
+        <div style="text-align:center;margin:20px 0;">
+
+            <input type="text" id="searchFood" placeholder="🔍 Search food..." style="
+padding:12px;
+width:300px;
+max-width:90%;
+border-radius:8px;
+border:1px solid #ccc;
+">
+
+        </div>
+        <div id="categoryFilters" style="
+text-align:center;
+margin-bottom:20px;
+">
+        </div>
+        <div id="menuList" class="menu-grid">
+
+        </div>
+
+    </section>
+
+    <section id="cart" class="section">
+
+        <h2>
+
+            Your Cart
+
+        </h2>
+
+        <div class="cart-box">
+
+            <div id="cartItems">
+
+                Cart Empty
+
+            </div>
+
+            <h2 class="bill-heading">
+                🧾 Bill Summary
+            </h2>
+
+            <div class="bill-summary">
+
+                <div class="bill-row">
+                    <span>Subtotal</span>
+                    <span>₹<span id="subtotal">0</span></span>
+                </div>
+
+                <div class="bill-row">
+                    <span>Coupon Discount</span>
+                    <span>
+                        - ₹<span id="discountAmount">0</span>
+                    </span>
+                </div>
+
+                <div class="bill-row" id="summaryDeliveryRow">
+
+                    <span>Delivery Charge</span>
+
+                    <span>
+                        ₹<span id="summaryDelivery">0</span>
+                    </span>
+
+                </div>
+
+                <div class="bill-total">
+
+                    <span>Grand Total</span>
+
+                    <span>
+                        ₹<span id="total">0</span>
+                    </span>
+
+                </div>
+
+            </div><input id="couponCode" placeholder="Coupon Code (WELCOME10)">
+
+            <button class="btn" type="button" onclick="applyCoupon()">
+
+                Apply Coupon
+
+            </button>
+            <button class="btn gray" type="button" onclick="openCouponPopup()">
+
+                🎟 View All Coupons
+
+            </button>
+            <p id="discountText">
+
+                Discount ₹0
+
+            </p>
+            <p id="deliveryETA">
+
+                🛵 Estimated Delivery:
+                30-40 Minutes
+
+            </p>
+            <div id="tableBox">
+
+                <input id="tableNumber" placeholder="Table Number">
+
+            </div>
+
+            <input id="customer" placeholder="Customer Name">
+
+            <input id="phone" placeholder="
+Phone Number
+">
+            <p>
+
+                🏆 Loyalty Points:
+
+                <span id="userPoints">
+
+                    0
+
+                </span>
+
+            </p>
+            <button class="btn" type="button" onclick="redeemPoints()">
+
+                Redeem Points
+
+            </button>
+
+            <p id="pointsDiscount">
+
+                Points Discount ₹0
+
+            </p>
+
+            <textarea id="address" placeholder="
+Address
+">
+
+</textarea>
+            <select id="orderType">
+                  
+                <option value="dinein">
+                    Dine In
+                </option>
+
+                <option value="takeaway">
+                    Take Away
+                </option>
+
+                <option
+                value="delivery"
+                id="deliveryOption">
+
+                Home Delivery
+
+                </option>
+
+            </select>
+               <div style="margin-top:15px;">
+  <label><b>Payment Method</b></label>
+
+  <select id="paymentMethod" style="width:100%;padding:12px;margin-top:8px;">
+    <option value="online">Pay Online</option>
+    <option value="counter">Pay At Counter</option>
+  </select>
+</div>
+            <div id="deliveryBox" style="display:none;">
+
+                <input type="text" id="landmark" placeholder="Landmark">
+
+                <button type="button" class="btn" onclick="getLocation()">
+
+                    Use Current Location
+
+                </button>
+
+                <input type="hidden" id="latitude">
+
+                <input type="hidden" id="longitude">
+
+                <div id="mapLink"></div>
+
+                <h4>
+
+                    Delivery Charge ₹
+
+                    <span id="deliveryCharge">
+
+                        0
+
+                    </span>
+
+                </h4>
+
+            </div>
+
+            <button class="btn" onclick="
+placeOrder()
+">
+
+                Place Order
+
+            </button>
+
+            <a id="whatsappOrder" class="btn green" target="_blank" style="display:none;margin-top:10px;">
+                Send Order on WhatsApp
+            </a>
+        </div>
+
+    </section>
+    <section id="track" class="section">
+
+        <h2>
+
+            Track Order
+
+        </h2>
+
+        <input id="trackId" placeholder="
+Enter Order ID
+">
+
+        <button id="trackBtn" class="btn" type="button">
+
+            Track Order
+
+        </button>
+
+        <div id="trackResult"></div>
+
+    </section>
+
+    <section class="section reveal">
+
+        <h2 class="center">
+            ⭐ Customer Reviews
+        </h2>
+
+        <div id="reviewsList" class="reviews">
+        </div>
+        <section class="section">
+
+            <h2 class="center">
+                ⭐ Rate Us
+            </h2>
+
+            <div class="cart-box">
+
+                <input id="reviewName" placeholder="Your Name">
+
+                <select id="reviewRating">
+
+                    <option>⭐⭐⭐⭐⭐</option>
+                    <option>⭐⭐⭐⭐</option>
+                    <option>⭐⭐⭐</option>
+                    <option>⭐⭐</option>
+                    <option>⭐</option>
+
+                </select>
+
+                <textarea id="reviewText" placeholder="Write Review">
+</textarea>
+
+                <button class="btn" onclick="submitReview()">
+
+                    Submit Review
+
+                </button>
+
+            </div>
+
+        </section>
+
+    </section>
+    <section id="contact" class="section center reveal">
+
+        <h2>
+
+            Contact Us
+
+        </h2>
+
+        <p id="contactText">
+
+            Main Market
+
+        </p>
+
+    </section>
+    <div id="couponPopup" class="popup">
+
+        <div class="popup-box">
+
+            <h2>
+                🎟 Available Coupons
+            </h2>
+
+            <div id="couponPopupList">
+
+                Loading...
+
+            </div>
+            <button class="btn" onclick="closeCouponPopup()">
+
+                Close
+
+            </button>
+
+        </div>
+    </div>
+    <div id="popup" class="popup">
+
+        <div class="popup-box">
+
+            <button class="popup-back-btn" onclick="closePopup()">
+
+                ← Back to Menu
+
+            </button>
+
+            <div class="popup-top">
+
+                <div class="popup-image">
+
+                    <img id="popupImg" class="food-img">
+
+                </div>
+
+                <div class="popup-info">
+
+                    
+
+                    <h2 id="popupName"></h2>
+
+                    <div style="margin-bottom:10px;">
+
+                        <span style="
+background:#16a34a;
+color:white;
+padding:6px 12px;
+border-radius:20px;
+font-size:14px;
+">
+
+                            ⭐ 4.8 Rating
+
+                        </span>
+
+                    </div>
+
+                    <span id="popupCategory"></span>
+
+                    <p id="popupDesc"></p>
+
+                    <div class="popup-price-row">
+
+                        <h2 id="popupPrice"></h2>
+
+                        <div id="popupQtyBox">
+
+                            <button id="popupBtn" class="btn" onclick="addSelected()">
+
+                                ADD
+
+                            </button>
+
+                        </div>
+
+
+                        <p id="popupStatus"></p>
+
+                    </div>
+
+                     <hr style="margin:40px 0;">
+                        <h3>
+                            🤖 Recommended For You
+                        </h3>
+
+                        <div id="recommendations" class="menu-grid">
+
+                        </div>
+                        
+
+
+                <a href="#cart" class="order-float">
+
+                    🍔 Order Now
+
+                </a>
+                <footer class="footer" id="copyrightText">
+                    © 2026 Rupa Cafe
+                </footer>
+
+                <div class="social-floating">
+
+                    <a id="instagramLink" target="_blank" title="Instagram">
+
+                        <img src="/images/instagram.png" class="social-icon">
+
+                    </a>
+
+                    <a id="facebookLink" target="_blank" title="Facebook">
+
+                        <img src="/images/facebook.png" class="social-icon">
+
+                    </a>
+
+                </div>
+
+                <a id="floatingWhatsapp" href="#" target="_blank" class="whatsapp-float">
+
+                    <img src="https://cdn-icons-png.flaticon.com/512/220/220236.png" width="22">
+
+                    <span>
+                        Chat on WhatsApp
+                    </span>
+
+                </a>
+                <script src="/js/app.js"></script>
+                  <script>
+
+fetch("/api/site")
+.then(r=>r.json())
+.then(site=>{
+
+if(site.deliveryEnabled === false){
+
+const option =
+document.getElementById("deliveryOption");
+
+if(option){
+
+option.disabled = true;
+option.innerText =
+"🚫 Home Delivery Unavailable";
+
+}
+
+const deliveryBtn =
+document.getElementById("deliveryBtn");
+
+if(deliveryBtn){
+
+deliveryBtn.style.background =
+"#888";
+
+deliveryBtn.style.cursor =
+"not-allowed";
+
+deliveryBtn.style.opacity =
+"0.6";
+
+deliveryBtn.innerHTML =
+"🚫 DELIVERY OFF";
+deliveryBtn.onclick = function(e){
+
+e.preventDefault();
+
+alert(
+"Home Delivery is currently unavailable"
+);
+
+};
+}
+
+}
+
+});
+
+</script>
+                <script>
+window.addEventListener("load", function () {
+
+    if (window.location.hash === "#track") {
+
+        const trackSection =
+        document.getElementById("track");
+
+        if (trackSection) {
+
+            trackSection.scrollIntoView({
+                behavior: "smooth"
+            });
+
+        }
+
+    }
+
+});
+</script>
+<script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+</body>
+
+</html>

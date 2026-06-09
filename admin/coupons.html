@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+
+<meta charset="UTF-8">
+
+<title>Coupons</title>
+
+<link
+rel="stylesheet"
+href="/admin/css/style.css">
+
+</head>
+
+<body>
+
+<div class="admin-layout">
+
+<aside class="sidebar">
+
+<h2>
+Rupa Cafe Admin
+</h2>
+
+<a href="/admin/dashboard.html">
+Dashboard
+</a>
+
+<a href="/admin/menu.html">
+Food Items
+</a>
+
+<a href="/admin/orders.html">
+Customer Orders
+</a>
+<a href="/admin/reviews.html">
+Customer Reviews
+</a>
+<a href="/admin/coupons.html">
+Coupons
+</a>
+<a href="/admin/loyalty.html">
+Loyalty Points
+</a>
+
+<a href="/admin/site.html">
+Website Settings
+</a>
+
+<a href="/">
+View Frontend
+</a>
+
+<a
+href="#"
+
+onclick="logout()">
+
+Logout
+
+</a>
+
+</aside>
+
+<main class="main">
+
+<h1>
+Coupon Manager
+</h1>
+
+<div class="card">
+
+<input
+id="couponCode"
+placeholder="Coupon Code">
+
+<input
+id="couponDiscount"
+type="number"
+placeholder="Discount %">
+<input
+id="couponMinOrder"
+type="number"
+placeholder="Minimum Order Amount">
+<input
+id="couponExpiry"
+type="date">
+
+<select id="couponActive">
+
+<option value="true">
+Active
+</option>
+
+<option value="false">
+Inactive
+</option>
+
+</select>
+
+<button
+class="btn"
+onclick="addCoupon()">
+
+Add Coupon
+
+</button>
+
+</div>
+
+<br>
+
+<table>
+
+<thead>
+
+<tr>
+
+<th>
+Coupon
+</th>
+
+<th>
+Discount
+</th>
+<th>
+Min Order
+</th>
+<th>
+Expiry
+</th>
+
+<th>
+Status
+</th>
+<th>
+Action
+</th>
+
+</tr>
+
+</thead>
+
+<tbody id="couponList">
+
+</tbody>
+
+</table>
+
+</main>
+
+</div>
+
+<script src="/admin/js/admin.js"></script>
+
+<script>
+
+async function loadCoupons(){
+
+const coupons =
+await fetch("/api/coupons")
+.then(r=>r.json());
+
+couponList.innerHTML =
+
+coupons.map(c => `
+
+<tr>
+
+<td>
+${c.code}
+</td>
+
+<td>
+${c.discount}%
+</td>
+<td>
+₹${c.minOrder || 0}
+</td>
+<td>
+${c.expiry || "-"}
+</td>
+
+<td>
+${c.active
+?
+"🟢 Active"
+:
+"🔴 Inactive"}
+</td>
+<td>
+
+<button
+class="btn"
+onclick="deleteCoupon('${c.code}')">
+
+Delete
+
+</button>
+
+</td>
+
+</tr>
+
+`).join("");
+
+}
+
+async function addCoupon(){
+
+const code =
+couponCode.value
+.trim()
+.toUpperCase();
+
+const discount =
+Number(
+couponDiscount.value
+);
+
+if(!code || !discount){
+
+alert("Fill all fields");
+
+return;
+
+}
+
+await fetch("/api/coupons",{
+
+method:"POST",
+
+
+headers:{
+"Content-Type":"application/json",
+
+"x-admin-key":
+localStorage.getItem("adminKey")
+},
+body:JSON.stringify({
+
+code,
+
+discount,
+
+minOrder:
+Number(
+couponMinOrder.value
+) || 0,
+
+expiry:
+couponExpiry.value || "",
+
+active:
+couponActive.value === "true"
+
+})
+
+});
+
+couponCode.value="";
+couponDiscount.value="";
+
+loadCoupons();
+
+}
+
+async function deleteCoupon(code){
+
+if(
+!confirm(
+"Delete coupon?"
+)
+)
+return;
+
+await fetch(
+"/api/coupons/" + code,
+{
+method:"DELETE",
+
+headers:{
+"x-admin-key":
+localStorage.getItem("adminKey")
+}
+}
+);
+
+loadCoupons();
+
+}
+
+loadCoupons();
+
+</script>
+<script>
+if(localStorage.getItem("darkMode")==="true"){
+    document.body.classList.add("dark-mode");
+}
+</script>
+</body>
+
+</html>
