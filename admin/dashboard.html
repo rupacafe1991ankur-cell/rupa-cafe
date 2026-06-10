@@ -642,7 +642,13 @@ revenueMap
 }
 const topCustomers =
 await fetch(
-"/api/top-customers"
+"/api/top-customers",
+{
+headers:{
+"x-admin-key":
+localStorage.getItem("adminKey")
+}
+}
 )
 .then(r=>r.json());
 if(topCustomers.length){
@@ -689,7 +695,13 @@ ${index+1}. ${c.phone} - ₹${c.total}
 `).join("");
 const loyaltyData =
 await fetch(
-"/api/loyalty-leaderboard"
+"/api/loyalty-leaderboard",
+{
+headers:{
+"x-admin-key":
+localStorage.getItem("adminKey")
+}
+}
 )
 .then(r=>r.json());
 
@@ -720,7 +732,13 @@ ${p.points} Points
 `).join("");
 const couponStats =
 await fetch(
-"/api/coupon-analytics"
+"/api/coupon-analytics",
+{
+headers:{
+"x-admin-key":
+localStorage.getItem("adminKey")
+}
+}
 )
 .then(r=>r.json());
 
@@ -778,7 +796,13 @@ async function loadStats(){
 
 const data =
 await fetch(
-"/api/dashboard-stats"
+"/api/dashboard-stats",
+{
+headers:{
+"x-admin-key":
+localStorage.getItem("adminKey")
+}
+}
 )
 .then(r=>r.json());
 
@@ -805,8 +829,6 @@ data.totalRevenue;
 
 }
 
-loadStats();
-updateRevenueStats("today");
 window.addEventListener("load",()=>{
 
 if(
@@ -992,6 +1014,10 @@ document.getElementById(
 filtered.length + " Orders";
 
 }
+
+loadStats();
+updateRevenueStats("today");
+
 </script>
   <script>
 

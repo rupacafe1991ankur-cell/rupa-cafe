@@ -1,5 +1,8 @@
+
 require("dotenv").config();
 
+const cors = require("cors");
+// const mongoose = require("mongoose");
 const rateLimit = require("express-rate-limit");
 const bcrypt = require("bcrypt");
 const Razorpay = require("razorpay");
@@ -23,7 +26,25 @@ const senderEmail =
 process.env.SENDER_EMAIL;
 
 const otpStore = {};
-const app = express();
+const verifiedOtpUsers = {};
+// =======================================
+// MongoDB Disabled
+// Using Supabase Instead
+// =======================================
+
+// const mongoose = require("mongoose");
+
+// mongoose.connect(process.env.MONGODB_URI)
+// .then(() => {
+//     console.log("✅ MongoDB Connected");
+// })
+// .catch((err) => {
+//     console.error("❌ MongoDB Error:", err);
+// });
+
+const supabase = require("./config/supabase");
+
+console.log("✅ Supabase Loaded");const app = express();
 app.use(
 helmet({
 contentSecurityPolicy:false
@@ -50,7 +71,7 @@ message: "Too many login attempts. Try again later."
 }
 });
 app.use(express.urlencoded({ extended: true }));
-
+app.use(cors());
 app.use("/", express.static(path.join(__dirname, "public")));
 
 function adminAuth(req,res,next){
@@ -73,19 +94,9 @@ app.use("/admin", express.static(path.join(__dirname, "admin")));
 app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 
 const menuFile = path.join(__dirname, "data", "menu.json");
-const ordersFile = path.join(__dirname, "data", "orders.json");
 const siteFile = path.join(__dirname, "data", "site.json");
 const reviewsFile = path.join(__dirname, "data", "reviews.json");
 const couponsFile = path.join(__dirname, "data", "coupons.json");
-const pointsFile = path.join(__dirname, "data", "points.json");
-const favoritesFile = path.join(__dirname, "data", "favorites.json");
-const notificationsFile =
-path.join(
-__dirname,
-"data",
-"notifications.json"
-);
-const usersFile = path.join(__dirname, "data", "users.json");
 
 function readJSON(file, fallback) {
   try {
@@ -156,26 +167,69 @@ fileSize:
 });
 
 // Site settings
-app.get("/api/site", (req, res) => {
-  res.json(readJSON(siteFile, {}));
+app.get("/api/site", async (req,res)=>{
+
+const { data,error } =
+await supabase
+.from("site_settings")
+.select("*")
+.eq("id",1)
+.single();
+
+if(error){
+return res.json({});
+}
+
+res.json(data.data || {});
+
 });
 
 app.put(
 "/api/site",
 adminAuth,
-(req,res)=>{
-  writeJSON(siteFile, req.body);
-  res.json({ success: true });
+async (req,res)=>{
+
+const { error } =
+await supabase
+.from("site_settings")
+.update({
+data:req.body
+})
+.eq("id",1);
+
+if(error){
+
+return res.json({
+success:false
+});
+
+}
+
+res.json({
+success:true
+});
+
 });
 
 // Menu APIs
-app.get("/api/menu", (req, res) => {
-  res.json(readJSON(menuFile, []));
+app.get("/api/menu", async (req,res)=>{
+
+const { data,error } =
+await supabase
+.from("menu")
+.select("*")
+.order("id");
+
+if(error){
+return res.json([]);
+}
+
+res.json(data || []);
+
 });
 
-app.post("/api/menu", adminAuth,upload.single("image"), (req, res) => {
-  const menu = readJSON(menuFile, []);
-  const items = req.body.items || [];
+app.post("/api/menu", adminAuth,upload.single("image"), async(req, res) => {
+  
   const item = {
   id: Date.now(),
 
@@ -202,53 +256,122 @@ app.post("/api/menu", adminAuth,upload.single("image"), (req, res) => {
   ? "/uploads/" + req.file.filename
   : ""
 };
-  menu.push(item);
-  writeJSON(menuFile, menu);
-  res.json({ success: true, item });
+  const { error } =
+await supabase
+.from("menu")
+.insert({
+id:item.id,
+name:item.name,
+category:item.category,
+price:item.price,
+description:item.desc,
+available:item.available,
+popular:item.popular,
+best_seller:item.bestSeller,
+image:item.image
 });
 
-app.put("/api/menu/:id",adminAuth, upload.single("image"), (req, res) => {
-  let menu = readJSON(menuFile, []);
-  const id = Number(req.params.id);
-  menu = menu.map(item => {
-    if (item.id === id) {
-      return {
-        ...item,
-        name: req.body.name || item.name,
-        category: req.body.category || item.category,
-        price: Number(req.body.price || item.price),
-        desc: req.body.desc || item.desc,
-        available: req.body.available === "true" || req.body.available === true,
-        popular:
-req.body.popular === "true",
+if(error){
+console.log("MENU ERROR:", error);
 
-bestSeller:
-req.body.bestSeller === "true",
-        image: req.file ? "/uploads/" + req.file.filename : item.image
-      };
-    }
-    return item;
-  });
-  writeJSON(menuFile, menu);
-  res.json({ success: true });
+return res.json({
+success:false,
+message:error.message,
+error
+});
+}
+
+res.json({
+success:true,
+item
 });
 
-app.put("/api/menu/:id/availability",adminAuth, (req, res) => {
-  let menu = readJSON(menuFile, []);
-  const id = Number(req.params.id);
-  menu = menu.map(item => item.id === id ? {
-    ...item,
-    available: req.body.available === true || req.body.available === "true"
-  } : item);
-  writeJSON(menuFile, menu);
-  res.json({ success: true });
 });
 
-app.delete("/api/menu/:id",adminAuth, (req, res) => {
+app.put("/api/menu/:id", adminAuth, upload.single("image"), async (req,res)=>{
+
+const updateData = {
+name:req.body.name,
+category:req.body.category,
+price:Number(req.body.price),
+description:req.body.desc,
+available:req.body.available === "true",
+popular:req.body.popular === "true",
+best_seller:req.body.bestSeller === "true"
+};
+
+if(req.file){
+updateData.image =
+"/uploads/" + req.file.filename;
+}
+
+const { error } =
+await supabase
+.from("menu")
+.update(updateData)
+.eq("id", Number(req.params.id));
+
+if(error){
+
+return res.json({
+success:false,
+message:error.message
+});
+
+}
+
+res.json({
+success:true
+});
+
+});
+
+app.put("/api/menu/:id/availability", adminAuth, async (req,res)=>{
+
+const { error } =
+await supabase
+.from("menu")
+.update({
+available:
+req.body.available === true ||
+req.body.available === "true"
+})
+.eq("id", Number(req.params.id));
+
+if(error){
+
+return res.json({
+success:false
+});
+
+}
+
+res.json({
+success:true
+});
+
+});
+
+app.delete("/api/menu/:id", adminAuth, async (req, res) => {
   let menu = readJSON(menuFile, []);
   const id = Number(req.params.id);
-  menu = menu.filter(item => item.id !== id);
-  writeJSON(menuFile, menu);
+  const { error } =
+await supabase
+.from("menu")
+.delete()
+.eq("id", Number(req.params.id));
+
+if(error){
+
+return res.json({
+success:false
+});
+
+}
+
+res.json({
+success:true
+});
   res.json({ success: true });
 });
 
@@ -277,10 +400,8 @@ message:
 });
 
 }
-  const orders = readJSON(ordersFile, []);
-  const menu = readJSON(menuFile, []);
-  const items = req.body.items || [];
-  
+
+    
   let calculatedTotal = 0;
 
 for(const cartItem of items){
@@ -350,61 +471,41 @@ coupon.code;
 }
 
 }
-  
-  const unavailableItem = items.find(cartItem => {
-    const original = menu.find(m => m.id === cartItem.id);
-    return original && original.available === false;
-  });
-
-  if (unavailableItem) {
-    return res.status(400).json({
-      success: false,
-      message: unavailableItem.name + " is currently not available."
-    });
-  }
-
   const order = {
-  id: Date.now(),
+id: Date.now(),
 
-  tableNumber:
-  req.body.tableNumber || "",
+tableNumber:
+req.body.tableNumber || "",
 
-  customer:
-  req.body.customer || "",
+customer:
+req.body.customer || "",
 
-  phone:
-  req.body.phone || "",
+phone:
+req.body.phone || "",
 
-  address:
-  req.body.address || "",
+address:
+req.body.address || "",
 
-  orderType:
-  req.body.orderType || "dinein",
+orderType:
+req.body.orderType || "dinein",
 
-  landmark:
-  req.body.landmark || "",
+landmark:
+req.body.landmark || "",
 
-  latitude:
-  req.body.latitude || "",
+latitude:
+req.body.latitude || "",
 
-  longitude:
-  req.body.longitude || "",
+longitude:
+req.body.longitude || "",
 
-  deliveryCharge:
-  Number(req.body.deliveryCharge) || 0,
+deliveryCharge:
+Number(req.body.deliveryCharge) || 0,
 
-  items: items,
+items,
 
-  total:
-
-calculatedTotal
-
--
-
-couponDiscount
-
-+
-
+total:
+calculatedTotal -
+couponDiscount +
 (Number(req.body.deliveryCharge) || 0),
 
 coupon:
@@ -418,93 +519,111 @@ req.body.paymentMethod || "online",
 
 paymentStatus:
 req.body.paymentMethod === "counter"
-?
-"Pay At Counter"
-:
-"Pending",
+? "Pay At Counter"
+: "Pending",
 
-paymentId: "",  
-  status:
-  req.body.status || "Pending",
+paymentId: "",
 
-  time:
-  new Date().toLocaleString()
-};
-
-  orders.push(order);
-  let points =
-readJSON(pointsFile,[]);
-
-const earnedPoints =
-Math.floor(
-Number(order.total) / 10
-);
-
-const existingUser =
-points.find(
-p => p.phone === order.phone
-);
-
-if(existingUser){
-
-existingUser.points +=
-earnedPoints;
-let notifications =
-readJSON(
-notificationsFile,
-[]
-);
-
-notifications.unshift({
-
-id:Date.now(),
-
-phone:order.phone,
-
-message:
-`🎁 You earned ${earnedPoints} loyalty points`,
+status:
+req.body.status || "Pending",
 
 time:
-new Date()
-.toLocaleString()
+new Date().toLocaleString()
+};
+  const unavailableItem = items.find(cartItem => {
+    const original = menu.find(m => m.id === cartItem.id);
+    return original && original.available === false;
+  });
 
+  if (unavailableItem) {
+    return res.status(400).json({
+      success: false,
+      message: unavailableItem.name + " is currently not available."
+    });
+  }
+
+  const { error: orderInsertError } =
+await supabase
+.from("orders")
+.insert({
+id: order.id,
+table_number: order.tableNumber,
+customer: order.customer,
+phone: order.phone,
+address: order.address,
+order_type: order.orderType,
+landmark: order.landmark,
+latitude: String(order.latitude),
+longitude: String(order.longitude),
+delivery_charge: order.deliveryCharge,
+items: order.items,
+total: order.total,
+coupon: order.coupon,
+coupon_discount: order.couponDiscount,
+payment_method: order.paymentMethod,
+payment_status: order.paymentStatus,
+payment_id: order.paymentId,
+status: order.status,
+time: order.time
 });
 
-writeJSON(
-notificationsFile,
-notifications
-);
-}else{
+if(orderInsertError){
 
-points.push({
+console.log(orderInsertError);
 
-phone:
-order.phone,
-
-points:
-earnedPoints
-
+return res.status(500).json({
+success:false,
+message:orderInsertError.message
 });
 
 }
 
-writeJSON(
-pointsFile,
-points
-);
-  writeJSON(ordersFile, orders);
+const earnedPoints =
+Math.floor(Number(order.total) / 10);
+
+const { data: existingPointUser } =
+await supabase
+.from("points")
+.select("*")
+.eq("phone", order.phone)
+.single();
+
+if(existingPointUser){
+
+await supabase
+.from("points")
+.update({
+points:
+(existingPointUser.points || 0)
++ earnedPoints
+})
+.eq("phone", order.phone);
+
+}else{
+
+await supabase
+.from("points")
+.insert({
+phone: order.phone,
+points: earnedPoints
+});
+
+}
+
+
+  
   try{
 
 const api =
 new SibApiV3Sdk.TransactionalEmailsApi();
 
-const users =
-readJSON(usersFile,[]);
 
-const user =
-users.find(
-u => u.phone === order.phone
-);
+const { data:user } =
+await supabase
+.from("users")
+.select("*")
+.eq("phone",order.phone) // ya updatedOrder.phone
+.single();
 
 if(user && user.email){
 
@@ -557,22 +676,46 @@ err
 app.get(
 "/api/orders",
 adminAuth,
-(req,res)=>{
+async (req,res)=>{
 
-res.json(
-readJSON(ordersFile,[])
-);
+const { data, error } =
+await supabase
+.from("orders")
+.select("*")
+.order("id",{ascending:false});
+
+if(error){
+
+return res.status(500).json({
+success:false,
+message:error.message
+});
+
+}
+
+res.json(data || []);
 
 });
 
 app.put("/api/orders/:id/status", adminAuth,async (req, res) => {
-  let orders = readJSON(ordersFile, []);
-  const id = Number(req.params.id);
-  orders = orders.map(order => order.id === id ? { ...order, status: req.body.status || order.status } : order);
-  const updatedOrder =
-orders.find(
-o => o.id === id
-);
+  const { data: updatedOrder, error } =
+await supabase
+.from("orders")
+.update({
+status: req.body.status
+})
+.eq("id", req.params.id)
+.select()
+.single();
+
+if(error){
+
+return res.status(500).json({
+success:false,
+message:error.message
+});
+
+}
 
 if(
 updatedOrder &&
@@ -585,15 +728,12 @@ try{
 const api =
 new SibApiV3Sdk.TransactionalEmailsApi();
 
-const users =
-readJSON(usersFile,[]);
-
-const user =
-users.find(
-u =>
-u.phone ===
-updatedOrder.phone
-);
+const { data:user } =
+await supabase
+.from("users")
+.select("*")
+.eq("phone", updatedOrder.phone)
+.single();
 
 if(user && user.email){
 
@@ -638,157 +778,128 @@ err
 
 if(updatedOrder){
 
-let notifications =
-readJSON(
-notificationsFile,
-[]
-);
-
-notifications.unshift({
-
+await supabase
+.from("notifications")
+.insert({
 id: Date.now(),
-
-phone:
-updatedOrder.phone,
+phone: updatedOrder.phone,
 
 message:
 
 updatedOrder.status === "Preparing"
+? "🍳 Your order is being prepared"
 
-? `🍳 Your order is being prepared`
+: updatedOrder.status === "Ready"
+? "✅ Your order is ready"
 
-:
+: updatedOrder.status === "Delivered"
+? "🎉 Order delivered successfully"
 
-updatedOrder.status === "Ready"
+: `📦 Order status: ${updatedOrder.status}`,
 
-? `✅ Your order is ready`
-
-:
-
-updatedOrder.status === "Delivered"
-
-? `🎉 Order delivered successfully`
-
-:
-
-`📦 Order status:
-${updatedOrder.status}`,
-
-time:
-new Date()
-.toLocaleString()
-
+time: new Date().toLocaleString()
 });
 
-writeJSON(
-notificationsFile,
-notifications
-);
+
 
 }
-  writeJSON(ordersFile, orders);
   res.json({ success: true });
 });
 app.put(
-"/api/orders/:id/payment",adminAuth,
-(req,res)=>{
+"/api/orders/:id/payment",
+adminAuth,
+async (req,res)=>{
 
-const orders =
-readJSON(
-ordersFile,
-[]
-);
+const { error } =
+await supabase
+.from("orders")
+.update({
+payment_status:"Paid"
+})
+.eq("id", req.params.id);
 
-const order =
-orders.find(
-o =>
-String(o.id) ===
-String(req.params.id)
-);
+if(error){
 
-if(!order){
-
-return res.status(404).json({
-success:false
+return res.status(500).json({
+success:false,
+message:error.message
 });
 
 }
 
-order.paymentStatus =
-"Paid";
+res.json({
+success:true
+});
 
-writeJSON(
-ordersFile,
-orders
-);
+});app.delete("/api/orders/:id", adminAuth, async (req,res)=>{
+
+const id =
+Number(req.params.id);
+
+const { error } =
+await supabase
+.from("orders")
+.delete()
+.eq("id", id);
+
+if(error){
+
+return res.json({
+success:false,
+message:error.message
+});
+
+}
 
 res.json({
 success:true
 });
 
 });
-app.delete("/api/orders/:id",adminAuth, (req, res) => {
-  let orders = readJSON(ordersFile, []);
-  const id = Number(req.params.id);
-  orders = orders.filter(order => order.id !== id);
-  writeJSON(ordersFile, orders);
-  res.json({ success: true });
-});
-app.get("/api/order/:id",(req,res)=>{
+app.get("/api/order/:id", async (req,res)=>{
 
-const orders=
-readJSON(
-ordersFile,
-[]
-)
+const { data:order, error } =
+await supabase
+.from("orders")
+.select("*")
+.eq("id", req.params.id)
+.single();
 
-const order=
-orders.find(
-x=>x.id==req.params.id
-)
-
-if(!order){
+if(error || !order){
 
 return res.json({
 success:false
-})
+});
 
 }
 
+
 res.json({
-
 success:true,
-
 order
-
 });
 
 });
+app.get("/api/my-orders/:phone", async (req,res)=>{
 
-app.get("/api/my-orders/:phone",(req,res)=>{
+const { data, error } =
+await supabase
+.from("orders")
+.select("*")
+.eq("phone", req.params.phone)
+.order("id",{ascending:false});
 
-const orders =
-readJSON(ordersFile,[]);
+if(error){
 
-const myOrders =
-orders.filter(
-o => o.phone === req.params.phone
-);
+return res.json([]);
+}
 
-res.json(myOrders);
+res.json(data || []);
 
 });
-
-
 app.get(
 "/api/invoice/:id",
-(req,res)=>{
-
-const orders =
-readJSON(
-ordersFile,
-[]
-);
+async (req,res)=>{
 
 const site =
 readJSON(
@@ -796,12 +907,20 @@ siteFile,
 {}
 );
 
-const order =
-orders.find(
-o =>
-String(o.id) ===
-String(req.params.id)
-);
+const { data: order, error } =
+await supabase
+.from("orders")
+.select("*")
+.eq("id", req.params.id)
+.single();
+
+if(error || !order){
+
+return res
+.status(404)
+.send("Order not found");
+
+}
 
 if(!order){
 
@@ -1085,373 +1204,259 @@ align:"center"
 doc.end();});
 // Reviews APIs
 
-app.get("/api/reviews", (req, res) => {
-  res.json(readJSON(reviewsFile, []));
-});
+app.get("/api/reviews", async (req,res)=>{
 
-app.post("/api/reviews", (req, res) => {
+const { data,error } =
+await supabase
+.from("reviews")
+.select("*")
+.order("id",{ascending:false});
 
-  const reviews = readJSON(reviewsFile, []);
-
-  const review = {
-    id: Date.now(),
-    name: req.body.name || "",
-    rating: req.body.rating || "⭐⭐⭐⭐⭐",
-    review: req.body.review || "",
-    time:
-new Date()
-.toLocaleDateString(),
-    approved: false
-  };
-
-  reviews.push(review);
-
-  writeJSON(reviewsFile, reviews);
-
-  res.json({
-    success: true
-  });
-
-});
-
-app.delete("/api/reviews/:id", adminAuth, (req, res) => {
-
-  let reviews = readJSON(reviewsFile, []);
-
-  reviews = reviews.filter(
-    r => r.id !== Number(req.params.id)
-  );
-
-  writeJSON(reviewsFile, reviews);
-
-  res.json({
-    success: true
-  });
-
-});
-
-app.put("/api/reviews/:id/approve", adminAuth, (req,res)=>{
-
-  let reviews =
-  readJSON(reviewsFile, []);
-
-  reviews =
-  reviews.map(r =>
-  r.id === Number(req.params.id)
-  ? {
-      ...r,
-      approved:true
-    }
-  : r
-  );
-
-  writeJSON(
-    reviewsFile,
-    reviews
-  );
-
-  res.json({
-    success:true
-  });
-
-});
-// Coupons APIs
-
-app.get("/api/coupons", (req,res)=>{
-
-  res.json(
-    readJSON(couponsFile, [])
-  );
-
-});
-
-app.post("/api/coupons", adminAuth, (req,res)=>{
-
-  const coupons =
-  readJSON(couponsFile, []);
-  const exists =
-coupons.find(
-c =>
-c.code ===
-(req.body.code || "")
-.toUpperCase()
-);
-
-if(exists){
-
-return res.json({
-
-success:false,
-
-message:
-"Coupon already exists"
-
-});
-
+if(error){
+return res.json([]);
 }
 
-  coupons.push({
-
-code:
-(req.body.code || "")
-.toUpperCase(),
-
-discount:
-Number(req.body.discount) || 0,
-
-minOrder:
-Number(req.body.minOrder) || 0,
-
-expiry:
-req.body.expiry || "",
-
-active:
-req.body.active === true ||
-req.body.active === "true"
-
-});
-  writeJSON(
-    couponsFile,
-    coupons
-  );
-
-  res.json({
-    success:true
-  });
+res.json(data || []);
 
 });
 
-app.delete("/api/coupons/:code", adminAuth, (req,res)=>{
+app.post("/api/reviews", async (req,res)=>{
 
-  let coupons =
-  readJSON(couponsFile, []);
-
-  coupons =
-  coupons.filter(
-    c =>
-    c.code !==
-    req.params.code
-  );
-
-  writeJSON(
-    couponsFile,
-    coupons
-  );
-
-  res.json({
-    success:true
-  });
-
-});
-app.post("/api/register", async (req,res)=>{
-
-if(
-!req.body.email ||
-!req.body.phone ||
-!req.body.password
-){
-return res.json({
-success:false,
-message:"All fields required"
-});
-}
-
-const users =
-readJSON(usersFile,[]);
-
-const existing =
-users.find(
-u =>
-u.phone === req.body.phone
-);
-
-if(existing){
-
-return res.json({
-
-success:false,
-
-message:
-"Phone already registered"
-
-});
-
-
-}
-
-const user = {
-
+const review = {
 id: Date.now(),
-
-name:
-req.body.name || "",
-
-phone:
-req.body.phone || "",
-
-email:
-req.body.email || "",
-
-password:
-await bcrypt.hash(
-req.body.password,
-10
-)
-
+name:req.body.name || "",
+rating:req.body.rating || "⭐⭐⭐⭐⭐",
+review:req.body.review || "",
+time:new Date().toLocaleDateString(),
+approved:false
 };
-const notifications =
-readJSON(
-notificationsFile,
-[]
-);
 
-notifications.unshift({
+const { error } =
+await supabase
+.from("reviews")
+.insert(review);
 
-id:Date.now(),
+if(error){
 
-phone:user.phone,
-
-message:
-"Welcome to Rupa Cafe ❤️",
-
-time:
-new Date()
-.toLocaleString()
-
+return res.json({
+success:false
 });
 
-writeJSON(
-notificationsFile,
-notifications
-);
-users.push(user);
-
-writeJSON(
-usersFile,
-users
-);
-
-try{
-
-const api =
-new SibApiV3Sdk.TransactionalEmailsApi();
-
-await api.sendTransacEmail({
-
-sender:{
-email:senderEmail
-},
-
-to:[
-{
-email:user.email
 }
-],
 
-subject:"Welcome to Rupa Cafe ❤️",
-
-htmlContent:`
-
-<h2>Welcome ${user.name}</h2>
-
-<p>Your account has been created successfully.</p>
-
-<p>We're excited to serve you ☕</p>
-
-`
-
-});
-
-}catch(err){
-
-console.log(
-"Welcome Email Error:",
-err.message
-);
-
-}
 res.json({
-
 success:true
-
 });
 
 });
-app.post("/api/login", loginLimiter, async (req, res) => {
 
-    const users = readJSON(usersFile, []);
+app.delete("/api/reviews/:id", adminAuth, async (req,res)=>{
 
-    const user = users.find(
-        u => u.email === req.body.email
-    );
+const { error } =
+await supabase
+.from("reviews")
+.delete()
+.eq("id", Number(req.params.id));
 
-    if(!user){
-        return res.json({
-            success:false,
-            message:"Invalid Credentials"
-        });
+res.json({
+success:!error
+});
+
+});
+app.put("/api/reviews/:id/approve", adminAuth, async (req,res)=>{
+
+const { error } =
+await supabase
+.from("reviews")
+.update({
+approved:true
+})
+.eq("id", Number(req.params.id));
+
+res.json({
+success:!error
+});
+
+});// Coupons APIs
+
+app.get("/api/coupons", async (req,res)=>{
+
+const { data,error } =
+await supabase
+.from("coupons")
+.select("*");
+
+if(error){
+return res.json([]);
+}
+
+res.json(data || []);
+
+});
+
+app.post("/api/coupons", adminAuth, async (req,res)=>{
+
+const { error } =
+await supabase
+.from("coupons")
+.insert({
+code:(req.body.code || "").toUpperCase(),
+discount:Number(req.body.discount),
+min_order:Number(req.body.minOrder),
+expiry:req.body.expiry,
+active:req.body.active === true ||
+req.body.active === "true"
+});
+
+if(error){
+
+return res.json({
+success:false,
+message:error.message
+});
+
+}
+
+res.json({
+success:true
+});
+
+});
+app.delete("/api/coupons/:code", adminAuth, async (req,res)=>{
+
+const { error } =
+await supabase
+.from("coupons")
+.delete()
+.eq("code", req.params.code);
+
+res.json({
+success:!error
+});
+
+});
+
+app.post("/api/register", async (req, res) => {
+  try {
+    const { name, phone, email, password } = req.body;
+
+    if (!email || !phone || !password) {
+      return res.json({
+        success: false,
+        message: "All fields required"
+      });
     }
 
-    let match = false;
+    const { data: existingUser } = await supabase
+      .from("users")
+      .select("*")
+      .eq("phone", phone)
+      .single();
 
-    if(user.password.startsWith("$2")){
-         match = await bcrypt.compare(
-            req.body.password,
-            user.password
-        );
-    } else {
-        match = req.body.password === user.password;
+    if (existingUser) {
+      return res.json({
+        success: false,
+        message: "Phone already registered"
+      });
     }
 
-    if(!match){
-        return res.json({
-            success:false,
-            message:"Invalid Credentials"
-        });
+    const hashedPassword = await bcrypt.hash(password, 10);
+
+    const { error } = await supabase
+      .from("users")
+      .insert({
+        name,
+        phone,
+        email,
+        password: hashedPassword
+      });
+
+    if (error) {
+      return res.json({
+        success: false,
+        message: error.message
+      });
     }
 
     res.json({
-        success:true,
-        user
+      success: true
     });
 
+  } catch (err) {
+    console.log(err);
+    res.json({
+      success: false,
+      message: err.message
+    });
+  }
+
 });
+app.post("/api/login", loginLimiter, async (req, res) => {
+  try {
 
+    const { data: user } = await supabase
+      .from("users")
+      .select("*")
+      .eq("email", req.body.email)
+      .single();
 
-// GOOGLE LOGIN ROUTE
-app.post("/api/google-login", (req,res)=>{
+    if (!user) {
+      return res.json({
+        success: false,
+        message: "Invalid Credentials"
+      });
+    }
 
-let users = readJSON(usersFile,[]);
+    const match = await bcrypt.compare(
+      req.body.password,
+      user.password
+    );
 
-let user = users.find(
-u => u.email === req.body.email
-);
+    if (!match) {
+      return res.json({
+        success: false,
+        message: "Invalid Credentials"
+      });
+    }
 
-if(!user){
+    delete user.password;
 
-user = {
+    res.json({
+      success: true,
+      user
+    });
 
-id: Date.now(),
+  } catch (err) {
+    console.log(err);
+    res.json({
+      success: false,
+      message: err.message
+    });
+  }
+});
+app.post("/api/admin-login", (req,res)=>{
 
-name: req.body.name || "",
+const username =
+(req.body.username || "").trim();
 
-email: req.body.email || "",
+const password =
+(req.body.password || "").trim();
 
-phone: req.body.email,
+if(
+username === process.env.ADMIN_USERNAME &&
+password === process.env.ADMIN_PASSWORD
+){
 
-password: ""
-
-};
-
-users.push(user);
-
-writeJSON(usersFile, users);
+return res.json({
+success:true,
+adminKey: process.env.ADMIN_KEY
+});
 
 }
 
-res.json({
-success:true,
-user
+return res.json({
+success:false,
+message:"Invalid Admin Credentials"
 });
 
 });
@@ -1459,18 +1464,30 @@ app.post(
 "/api/reset-password",
 async (req,res)=>{
 
-let users =
-readJSON(
-usersFile,
-[]
+try{
+if(!verifiedOtpUsers[req.body.email]){
+
+return res.json({
+success:false,
+message:"OTP Verification Required"
+});
+
+}
+const hashedPassword =
+await bcrypt.hash(
+req.body.password,
+10
 );
 
-const user =
-users.find(
-u =>
-u.email ===
+const { data:user } =
+await supabase
+.from("users")
+.select("*")
+.eq(
+"email",
 req.body.email
-);
+)
+.single();
 
 if(!user){
 
@@ -1481,34 +1498,59 @@ message:"Email Not Found"
 
 }
 
-user.password =
-await bcrypt.hash(
-req.body.password,
-10
+const { error } =
+await supabase
+.from("users")
+.update({
+password:
+hashedPassword
+})
+.eq(
+"email",
+req.body.email
 );
 
-writeJSON(
-usersFile,
-users
-);
+if(error){
 
+return res.json({
+success:false,
+message:error.message
+});
+
+}
+delete verifiedOtpUsers[req.body.email];
 res.json({
 success:true
 });
 
+}catch(err){
+
+console.log(err);
+
+res.json({
+success:false,
+message:err.message
 });
 
-app.get("/api/favorites/:phone",(req,res)=>{
+}
 
-const favorites = readJSON(favoritesFile,[]);
-const menu = readJSON(menuFile,[]);
+});
+app.get("/api/favorites/:phone", async (req,res)=>{
 
-const userFavs = favorites
-.filter(f => f.phone === req.params.phone)
+const { data:favorites } =
+await supabase
+.from("favorites")
+.select("*")
+.eq("phone", req.params.phone);
+
+
+const userFavs =
+(favorites || [])
 .map(f => {
 
-const item = menu.find(
-m => m.id == f.itemId
+const item =
+menu.find(
+m => String(m.id) === String(f.item_id)
 );
 
 return item || null;
@@ -1519,208 +1561,162 @@ return item || null;
 res.json(userFavs);
 
 });
+app.post("/api/favorites", async (req,res)=>{
 
-app.post("/api/favorites",(req,res)=>{
-
-const favorites =
-readJSON(
-favoritesFile,
-[]
-);
-
-const exists =
-favorites.find(
-
-f =>
-f.phone === req.body.phone
-&&
-f.itemId == req.body.itemId
-
-);
+const { data:exists } =
+await supabase
+.from("favorites")
+.select("*")
+.eq("phone", req.body.phone)
+.eq("item_id", req.body.itemId)
+.single();
 
 if(exists){
 
 return res.json({
-
 success:false,
-
-message:
-"Already Favorite"
-
+message:"Already Favorite"
 });
 
 }
 
-favorites.push({
-
-phone:
-req.body.phone,
-
-itemId:
-req.body.itemId
-
+const { error } =
+await supabase
+.from("favorites")
+.insert({
+phone:req.body.phone,
+item_id:req.body.itemId
 });
 
-writeJSON(
-favoritesFile,
-favorites
-);
+if(error){
+
+return res.json({
+success:false,
+message:error.message
+});
+
+}
 
 res.json({
-
 success:true
-
 });
 
 });
-
 app.delete(
 "/api/favorites/:phone/:itemId",
-(req,res)=>{
+async (req,res)=>{
 
-let favorites =
-readJSON(
-favoritesFile,
-[]
-);
+const { error } =
+await supabase
+.from("favorites")
+.delete()
+.eq("phone", req.params.phone)
+.eq("item_id", req.params.itemId);
 
-favorites =
-favorites.filter(
+if(error){
 
-f =>
+return res.json({
+success:false
+});
 
-!(
-
-f.phone ===
-req.params.phone
-
-&&
-
-String(f.itemId) ===
-String(req.params.itemId)
-
-)
-
-);
-
-writeJSON(
-favoritesFile,
-favorites
-);
+}
 
 res.json({
-
 success:true
-
 });
 
 });
+
 app.get(
 "/api/notifications/:phone",
-(req,res)=>{
+async (req,res)=>{
 
-const notifications =
-readJSON(
-notificationsFile,
-[]
-);
+const { data, error } =
+await supabase
+.from("notifications")
+.select("*")
+.eq("phone", req.params.phone)
+.order("id",{ascending:false});
 
-res.json(
+if(error){
 
-notifications.filter(
-n =>
-n.phone ===
-req.params.phone
-)
+console.log(error);
 
-);
+return res.json([]);
 
-});
-app.delete(
+}
+
+res.json(data || []);
+
+});app.delete(
 "/api/notifications/:phone",
-(req,res)=>{
+async (req,res)=>{
 
-let notifications =
-readJSON(
-notificationsFile,
-[]
-);
+const { error } =
+await supabase
+.from("notifications")
+.delete()
+.eq("phone", req.params.phone);
 
-notifications =
-notifications.filter(
-n =>
-String(n.phone) !==
-String(req.params.phone)
-);
+if(error){
 
-writeJSON(
-notificationsFile,
-notifications
-);
+return res.json({
+success:false
+});
+
+}
 
 res.json({
 success:true
 });
 
 });
-
 app.post(
 "/api/notifications",
 adminAuth,
-(req,res)=>{
+async (req,res)=>{
 
-const notifications =
-readJSON(
-notificationsFile,
-[]
-);
-
-notifications.unshift({
-
-id:Date.now(),
-
-phone:
-req.body.phone,
-
-message:
-req.body.message,
-
-time:
-new Date()
-.toLocaleString()
-
+const { error } =
+await supabase
+.from("notifications")
+.insert({
+id: Date.now(),
+phone: req.body.phone,
+message: req.body.message,
+time: new Date().toLocaleString()
 });
 
-writeJSON(
-notificationsFile,
-notifications
-);
+if(error){
+
+return res.json({
+success:false,
+message:error.message
+});
+
+}
 
 res.json({
 success:true
 });
 
-});
-// Loyalty Points APIs
-app.get("/api/all-points",(req,res)=>{
+});// Loyalty Points APIs
+app.get("/api/all-points",adminAuth, async (req,res)=>{
 
-res.json(
-readJSON(
-pointsFile,
-[]
-)
-);
+const { data } =
+await supabase
+.from("points")
+.select("*");
 
-});
-app.get("/api/points/:phone",(req,res)=>{
+res.json(data || []);
 
-const points =
-readJSON(pointsFile,[]);
+});app.get("/api/points/:phone", async (req,res)=>{
 
-const user =
-points.find(
-p => p.phone === req.params.phone
-);
+const { data:user } =
+await supabase
+.from("points")
+.select("*")
+.eq("phone", req.params.phone)
+.single();
 
 res.json({
 points:
@@ -1732,34 +1728,19 @@ user.points
 });
 
 });
-app.get("/api/loyalty-leaderboard",(req,res)=>{
+app.get("/api/loyalty-leaderboard", async (req,res)=>{
 
-const points =
-readJSON(pointsFile,[]);
+const { data } =
+await supabase
+.from("points")
+.select("*")
+.order("points",{ascending:false})
+.limit(10);
 
-const leaderboard =
-
-points
-.sort((a,b)=>
-(b.points||0) -
-(a.points||0)
-)
-.slice(0,10)
-.map(p=>({
-
-phone:p.phone,
-
-points:p.points||0
-
-}));
-
-res.json(leaderboard);
+res.json(data || []);
 
 });
-app.post("/api/redeem-points",(req,res)=>{
-
-let points =
-readJSON(pointsFile,[]);
+app.post("/api/redeem-points", async (req,res)=>{
 
 const phone =
 req.body.phone || "";
@@ -1767,20 +1748,14 @@ req.body.phone || "";
 const usedPoints =
 Number(req.body.points) || 0;
 
-const user =
-points.find(
-p => p.phone === phone
-);
+const { data:user, error } =
+await supabase
+.from("points")
+.select("*")
+.eq("phone", phone)
+.single();
 
-if(!user){
-
-return res.json({
-success:false
-});
-
-}
-
-if(user.points < usedPoints){
+if(error || !user){
 
 return res.json({
 success:false
@@ -1788,105 +1763,97 @@ success:false
 
 }
 
-user.points -= usedPoints;
+if(Number(user.points) < usedPoints){
 
-writeJSON(
-pointsFile,
-points
-);
+return res.json({
+success:false
+});
+
+}
+
+const remaining =
+Number(user.points) - usedPoints;
+
+const { error:updateError } =
+await supabase
+.from("points")
+.update({
+points: remaining
+})
+.eq("phone", phone);
+
+if(updateError){
+
+return res.json({
+success:false
+});
+
+}
 
 res.json({
 success:true,
-remaining:user.points
+remaining
 });
 
 });
-app.get("/api/top-customers",(req,res)=>{
-    
+app.get("/api/top-customers",adminAuth, async (req,res)=>{
 
-const orders =
-readJSON(ordersFile,[]);
+const { data:points, error } =
+await supabase
+.from("points")
+.select("*")
+.order("points",{ascending:false})
+.limit(10);
 
-const customerTotals = {};
+if(error){
 
-orders.forEach(order=>{
+return res.json([]);
 
-const phone =
-order.phone || "Unknown";
+}
 
-customerTotals[phone] =
-
-(customerTotals[phone] || 0)
-
-+
-
-Number(order.total || 0);
+res.json(points || []);
 
 });
+app.get("/api/dashboard-stats",adminAuth, async (req,res)=>{
 
-const topCustomers =
+const { data:orders } =
+await supabase
+.from("orders")
+.select("*");
 
-Object.entries(customerTotals)
-
-.map(([phone,total])=>({
-
-phone,
-total
-
-}))
-
-.sort(
-(a,b)=>
-b.total - a.total
-)
-
-.slice(0,10);
-
-res.json(topCustomers);
-
-});
-app.get("/api/dashboard-stats",(req,res)=>{
-  
-
-const orders =
-readJSON(ordersFile,[]);
-
-const points =
-readJSON(pointsFile,[]);
+const { data:points } =
+await supabase
+.from("points")
+.select("*");
 
 const totalRevenue =
-
-orders.reduce(
+(orders || [])
+.reduce(
 (sum,o)=>
 sum + Number(o.total || 0),
 0
 );
 
 const totalCustomers =
-points.length;
+(points || []).length;
 
 const totalPointsIssued =
-
-points.reduce(
+(points || [])
+.reduce(
 (sum,p)=>
 sum + Number(p.points || 0),
 0
 );
 
-let topCustomer =
-"-";
-
+let topCustomer = "-";
 let maxPoints = 0;
 
-points.forEach(p=>{
+(points || []).forEach(p=>{
 
 if(p.points > maxPoints){
 
-maxPoints =
-p.points;
-
-topCustomer =
-p.phone;
+maxPoints = p.points;
+topCustomer = p.phone;
 
 }
 
@@ -1895,23 +1862,19 @@ p.phone;
 res.json({
 
 totalRevenue,
-
 totalCustomers,
-
 totalPointsIssued,
-
 topCustomer
 
 });
 
 });
-app.get("/api/download-report",async (req,res)=>{
+app.get("/api/download-report",adminAuth,async (req,res)=>{
 
-const orders =
-readJSON(
-ordersFile,
-[]
-);
+const { data:orders } =
+await supabase
+.from("orders")
+.select("*");
 
 const workbook =
 new ExcelJS.Workbook();
@@ -1941,7 +1904,12 @@ width:15
 
 ];
 
-readJSON(pointsFile,[])
+const { data:points } =
+await supabase
+.from("points")
+.select("*");
+
+(points || [])
 .forEach(p=>{
 
 loyaltySheet.addRow(p);
@@ -1986,9 +1954,9 @@ orders.length
 
 summarySheet.addRow([
 "Revenue",
-orders.reduce(
+(orders || []).reduce(
 (s,o)=>
-s+Number(o.total||0),
+s + Number(o.total || 0),
 0
 )
 ]);
@@ -2043,7 +2011,7 @@ width:30
 
 ];
 
-orders.forEach(order=>{
+(orders || []).forEach(order=>{
 
 sheet.addRow({
 
@@ -2089,17 +2057,21 @@ await workbook.xlsx.write(res);
 res.end();
 
 });
-app.get("/api/coupon-analytics",(req,res)=>{
+app.get("/api/coupon-analytics", adminAuth, async (req,res)=>{
 
-const orders =
-readJSON(
-ordersFile,
-[]
-);
+const { data:orders, error } =
+await supabase
+.from("orders")
+.select("coupon");
+
+if(error){
+
+return res.json({});
+}
 
 const usage = {};
 
-orders.forEach(order=>{
+(orders || []).forEach(order=>{
 
 if(order.coupon){
 
@@ -2116,29 +2088,23 @@ usage[order.coupon] =
 res.json(usage);
 
 });
-
 app.post(
 "/api/send-otp",
 async (req,res)=>{
 
 try{
 
-const users =
-readJSON(usersFile,[]);
+const { data: user } = await supabase
+  .from("users")
+  .select("*")
+  .eq("email", req.body.email)
+  .single();
 
-const user =
-users.find(
-u =>
-u.email === req.body.email
-);
-
-if(!user){
-
-return res.json({
-success:false,
-message:"Email not found"
-});
-
+if (!user) {
+  return res.json({
+    success: false,
+    message: "Email not found"
+  });
 }
 
 const otp =
@@ -2226,7 +2192,7 @@ message:"Invalid OTP"
 }
 
 delete otpStore[email];
-
+verifiedOtpUsers[email] = true;
 res.json({
 success:true
 });
@@ -2298,15 +2264,28 @@ message:"Invalid payment signature"
 });
 
 }
-let orders = readJSON(ordersFile,[]);
+const { data:order, error:orderError } =
+await supabase
+.from("orders")
+.select("*")
+.eq("id", Number(req.body.orderId))
+.single();
 
-const order = orders.find(
-o => String(o.id) === String(req.body.orderId)
-);
+if(orderError || !order){
 
-if(!order){
-return res.json({success:false});
+return res.json({
+success:false
+});
+
 }
+
+await supabase
+.from("orders")
+.update({
+payment_status: "Paid",
+payment_id: req.body.paymentId
+})
+.eq("id", Number(req.body.orderId));
 
 order.paymentStatus = "Paid";
 order.paymentId = req.body.paymentId;
@@ -2316,13 +2295,12 @@ try{
 const api =
 new SibApiV3Sdk.TransactionalEmailsApi();
 
-const users =
-readJSON(usersFile,[]);
-
-const user =
-users.find(
-u => u.phone === order.phone
-);
+const { data:user } =
+await supabase
+.from("users")
+.select("*")
+.eq("phone", order.phone) // ya updatedOrder.phone
+.single();
 
 if(user && user.email){
 
@@ -2377,18 +2355,25 @@ err
 );
 
 }
-
-writeJSON(ordersFile,orders);
-
-res.json({success:true});
+await supabase
+.from("notifications")
+.insert({
+  id: Date.now(),
+  phone: order.phone,
+  message: "💳 Payment received successfully",
+  time: new Date().toLocaleString()
+});
+res.json({
+success:true
+});
 
 });
+
 
 app.listen(PORT, () => {
   console.log("======================================");
   console.log("Rupa Cafe server running");
   console.log("Frontend: http://localhost:" + PORT);
   console.log("Admin:    http://localhost:" + PORT + "/admin/login.html");
-  console.log("Login:    admin / admin123");
   console.log("======================================");
 });

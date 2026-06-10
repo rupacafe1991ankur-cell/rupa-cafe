@@ -41,16 +41,7 @@ Forgot Password?
 </a>
 </p>
 
-<!--
-<button
-class="btn"
-style="width:100%;margin-top:10px;background:#4285F4;"
-onclick="googleLogin()">
 
-🔵 Continue with Google
-
-</button>
--->
 <p>
 
 Don't have an account?
@@ -128,63 +119,6 @@ window.location="/";
 }
 
 </script>
-<script type="module">
 
-import { initializeApp }
-from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-
-import {
-getAuth,
-GoogleAuthProvider,
-signInWithRedirect,
-getRedirectResult
-}
-from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
-
-const firebaseConfig = {
-
-apiKey: "AIzaSyAxl0HmjIGK58o5SI_-O53JVjmEsw0kmzw",
-
-authDomain: "rupa-cafe.firebaseapp.com",
-
-projectId: "rupa-cafe",
-
-storageBucket: "rupa-cafe.firebasestorage.app",
-
-messagingSenderId: "27170534431",
-
-appId: "1:27170534431:web:1489e56163976ef2c2d12a",
-
-measurementId: "G-TC30WGG3L0"
-};
-
-const app = initializeApp(firebaseConfig);
-
-const auth = getAuth(app);
-
-const provider = new GoogleAuthProvider();
-
-window.googleLogin = async function(){
-
-try{
-
-await signInWithRedirect(
-auth,
-provider
-);
-
-}catch(err){
-
-console.error(err);
-
-alert(
-"Google Login Error\n\n" +
-err.message
-);
-
-}
-
-};
-</script>
 </body>
 </html>

@@ -558,7 +558,7 @@ font-size:14px;
 font-weight:bold;
 margin-top:8px;
 color:
-${o.paymentStatus === "Paid"
+${o.payment_status === "Paid"
 ?
 "#16a34a"
 :
@@ -568,7 +568,7 @@ ${o.paymentStatus === "Paid"
 
 ${
 
-o.paymentStatus === "Paid"
+o.payment_status === "Paid"
 
 ?
 
@@ -629,7 +629,7 @@ No Coupon
 
 ${
 
-o.paymentStatus === "Paid"
+o.payment_status === "Paid"
 ?
 ''
 :
@@ -737,7 +737,7 @@ onclick="sendWhatsApp(
 
 ${
 
-o.paymentStatus !== "Paid"
+o.payment_status !== "Paid"
 
 ?
 
