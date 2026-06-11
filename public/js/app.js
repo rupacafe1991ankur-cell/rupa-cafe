@@ -1445,9 +1445,13 @@ amount: totalVal
 }
 ).then(r=>r.json());
 
+const razorpayConfig =
+await fetch("/api/razorpay-key")
+.then(r=>r.json());
+
 const options = {
 
-key: "rzp_test_SzEDaI7FbXBrfY",
+key: razorpayConfig.key,
 
 amount: rpOrder.amount,
 

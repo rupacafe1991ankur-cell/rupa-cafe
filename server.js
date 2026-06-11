@@ -2227,6 +2227,14 @@ success:true
 
 });
 
+app.get("/api/razorpay-key",(req,res)=>{
+
+res.json({
+key: process.env.RAZORPAY_KEY_ID
+});
+
+});
+
 app.post(
 "/api/create-razorpay-order",
 async (req,res)=>{
