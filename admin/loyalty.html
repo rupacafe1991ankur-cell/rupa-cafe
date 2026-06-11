@@ -91,18 +91,42 @@ Logout
 </div>
 
 <script>
-
 async function loadPoints() {
-  const response = await fetch("/api/all-points");
+
+  const adminKey = localStorage.getItem("adminKey");
+
+  const response = await fetch("/api/all-points", {
+    headers: {
+      "x-admin-key": adminKey
+    }
+  });
+
   const data = await response.json();
-  const pointsTable = document.getElementById("pointsTable");
+
+  if (!Array.isArray(data)) {
+    console.error("API Error:", data);
+    document.getElementById("pointsTable").innerHTML =
+      `<tr>
+        <td colspan="3">Unauthorized or No Data Found</td>
+      </tr>`;
+    return;
+  }
+
+  const pointsTable =
+    document.getElementById("pointsTable");
 
   pointsTable.innerHTML = data.map(p => {
+
     let tier = "Bronze 🥉";
 
-    if (p.points >= 100) tier = "Silver 🥈";
-    if (p.points >= 500) tier = "Gold 🥇";
-    if (p.points >= 1000) tier = "Platinum 💎";
+    if (p.points >= 100)
+      tier = "Silver 🥈";
+
+    if (p.points >= 500)
+      tier = "Gold 🥇";
+
+    if (p.points >= 1000)
+      tier = "Platinum 💎";
 
     return `
       <tr>
@@ -111,11 +135,11 @@ async function loadPoints() {
         <td>${tier}</td>
       </tr>
     `;
+
   }).join("");
 }
 
 loadPoints();
-
 </script>
 <script>
 if(localStorage.getItem("darkMode")==="true"){

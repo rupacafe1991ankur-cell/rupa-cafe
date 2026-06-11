@@ -10,6 +10,11 @@ const crypto = require("crypto");
 const express = require("express");
 const helmet = require("helmet");
 const multer = require("multer");
+const { CloudinaryStorage } =
+require("multer-storage-cloudinary");
+
+const cloudinary =
+require("cloudinary").v2;
 const fs = require("fs");
 const path = require("path");
 const ExcelJS = require("exceljs");
@@ -111,17 +116,7 @@ function writeJSON(file, data) {
   fs.writeFileSync(file, JSON.stringify(data, null, 2));
 }
 
-const storage = multer.diskStorage({
-  destination: function(req, file, cb) {
-    const uploadPath = path.join(__dirname, "uploads");
-    if (!fs.existsSync(uploadPath)) fs.mkdirSync(uploadPath);
-    cb(null, uploadPath);
-  },
-  filename: function(req, file, cb) {
-    const safeName = file.originalname.replace(/[^a-zA-Z0-9.]/g, "-");
-    cb(null, Date.now() + "-" + safeName);
-  }
-});
+
 const fileFilter = (req,file,cb)=>{
 
 const allowedTypes = [
@@ -153,6 +148,38 @@ false
 }
 
 };
+
+cloudinary.config({
+cloud_name:
+process.env.CLOUDINARY_CLOUD_NAME,
+
+api_key:
+process.env.CLOUDINARY_API_KEY,
+
+api_secret:
+process.env.CLOUDINARY_API_SECRET
+});
+
+const storage =
+new CloudinaryStorage({
+
+cloudinary,
+
+params: {
+
+folder: "rupa-cafe",
+
+allowed_formats: [
+"jpg",
+"jpeg",
+"png",
+"webp"
+]
+
+}
+
+});
+
 const upload = multer({
 
 storage,
@@ -252,9 +279,9 @@ app.post("/api/menu", adminAuth,upload.single("image"), async(req, res) => {
   req.body.bestSeller === "true",
 
   image:
-  req.file
-  ? "/uploads/" + req.file.filename
-  : ""
+req.file
+? req.file.path
+: ""
 };
   const { error } =
 await supabase
@@ -301,10 +328,11 @@ best_seller:req.body.bestSeller === "true"
 };
 
 if(req.file){
-updateData.image =
-"/uploads/" + req.file.filename;
-}
 
+updateData.image =
+req.file.path;
+
+}
 const { error } =
 await supabase
 .from("menu")
@@ -1949,7 +1977,7 @@ workbook.addWorksheet(
 
 summarySheet.addRow([
 "Total Orders",
-orders.length
+(orders || []).length
 ]);
 
 summarySheet.addRow([
@@ -2030,10 +2058,10 @@ status:
 order.status,
 
 paymentMethod:
-order.paymentMethod,
+order.payment_method,
 
 paymentStatus:
-order.paymentStatus,
+order.payment_status,
 
 time:
 order.time

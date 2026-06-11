@@ -93,7 +93,7 @@ Logout
   </div>
 
   <div class="card">
-    <h3>👑 VIP Customer</h3>
+    <h3>VIP Points</h3>
     <h1 id="vipCustomer">-</h1>
     <p id="vipSpend">₹0</p>
     <p id="vipOrders">0 Orders</p>
@@ -164,13 +164,13 @@ Loading...
  </div>
 
 <div class="stat">
-  <h2 id="pendingPayments">0</h2>
-  <div class="stat">
-  <h2 id="counterOrders">0</h2>
-  <p>Pay At Counter</p>
+    <h2 id="pendingPayments">0</h2>
+    <p>Pending Payments</p>
 </div>
 
-  <p>Pending Payments</p>
+<div class="stat">
+    <h2 id="counterOrders">0</h2>
+    <p>Pay At Counter</p>
 </div>
   <div class="stat">
     <h2 id="approvedReviewCount">0</h2>
@@ -324,7 +324,7 @@ src="/admin/js/admin.js">
 </script>
 
 <script>
-
+let revenueChart = null;
 async function loadDashboard(){
 
 const site=
@@ -603,6 +603,37 @@ revenueByFood[
 profitableFood
 ] || 0
 );
+// TOP 5 FOODS
+
+const topFoods =
+Object.entries(foodCounter)
+.sort((a,b)=>b[1]-a[1])
+.slice(0,5);
+
+document.getElementById(
+"topFoodsList"
+).innerHTML =
+
+topFoods.length
+
+?
+
+topFoods.map((food,index)=>`
+
+<p>
+
+${index+1}. ${food[0]}
+
+(${food[1]} Orders)
+
+</p>
+
+`).join("")
+
+:
+
+"<p>No orders yet</p>";
+let revenueChartInstance = null;
 const chartCanvas =
 document.getElementById(
 "revenueChart"
@@ -610,10 +641,13 @@ document.getElementById(
 
 if(chartCanvas){
 
-new Chart(
+if(revenueChart){
+    revenueChart.destroy();
+}
+
+revenueChart = new Chart(
 chartCanvas,
 {
-
 type:"line",
 
 data:{
@@ -664,7 +698,7 @@ vip.phone;
 document.getElementById(
 "vipSpend"
 ).innerText =
-"₹" + vip.total;
+vip.points + " Points";
 
 const vipOrdersCount =
 
@@ -689,7 +723,7 @@ document.getElementById(
 topCustomers.map((c,index)=>`
 
 <p>
-${index+1}. ${c.phone} - ₹${c.total}
+${index+1}. ${c.phone} - ${c.points} Points
 </p>
 
 `).join("");
@@ -782,6 +816,12 @@ hourMap[peakHour] +
 }
 
 loadDashboard()
+let dashboardIntervalStarted = false;
+
+if(!dashboardIntervalStarted){
+
+dashboardIntervalStarted = true;
+
 setInterval(() => {
 
 loadDashboard();
@@ -789,6 +829,8 @@ loadDashboard();
 loadStats();
 
 }, 10000);
+
+}
 </script>
 <script>
 
@@ -847,12 +889,47 @@ document.body.classList.add(
 
 <script>
 
-function downloadReport(){
+async function downloadReport(){
 
-window.open(
+const response = await fetch(
 "/api/download-report",
-"_blank"
+{
+headers:{
+"x-admin-key":
+localStorage.getItem("adminKey")
+}
+}
 );
+
+if(!response.ok){
+
+alert("Unauthorized");
+
+return;
+
+}
+
+const blob =
+await response.blob();
+
+const url =
+window.URL.createObjectURL(blob);
+
+const a =
+document.createElement("a");
+
+a.href = url;
+
+a.download =
+"sales-report.xlsx";
+
+document.body.appendChild(a);
+
+a.click();
+
+a.remove();
+
+window.URL.revokeObjectURL(url);
 
 }
 
@@ -891,21 +968,21 @@ localStorage.getItem("adminKey")
 
 const paidOrders =
 orders.filter(
-o => o.paymentStatus === "Paid"
+o => o.payment_status === "Paid"
 ).length;
 
 const counterOrders =
 orders.filter(
 o =>
-o.paymentMethod === "counter"
+o.payment_method === "counter"
 ).length;
 
 const pendingPayments =
 orders.filter(
 o =>
-o.paymentMethod === "counter"
+o.payment_method === "counter"
 &&
-o.paymentStatus !== "Paid"
+o.payment_status !== "Paid"
 ).length;
 
 document.getElementById(
