@@ -2401,7 +2401,11 @@ success:true
 app.listen(PORT, () => {
   console.log("======================================");
   console.log("Rupa Cafe server running");
-  console.log("Frontend: http://localhost:" + PORT);
-  console.log("Admin:    http://localhost:" + PORT + "/admin/login.html");
+  app.listen(PORT, () => {
   console.log("======================================");
+  console.log("✅ Rupa Cafe server running");
+  console.log("🌐 Environment:", process.env.NODE_ENV || "development");
+  console.log("🚀 Port:", PORT);
+  console.log("======================================");
+});  console.log("======================================");
 });
