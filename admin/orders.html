@@ -728,6 +728,10 @@ o.status === "Delivered"
 Ready
 </option>
 
+<option ${o.status === "Cancelled" ? "selected" : ""}>
+Cancelled
+</option>
+
         <option ${o.status === "Out For Delivery" ? "selected" : ""}>
           Out For Delivery
         </option>
@@ -741,6 +745,26 @@ Ready
         </option>
 
         </select>
+
+${o.status === "Pending" ? `
+
+<button
+onclick="cancelOrder(${o.id})"
+style="
+background:#dc2626;
+color:white;
+border:none;
+padding:8px 12px;
+border-radius:8px;
+cursor:pointer;
+margin-top:8px;
+">
+
+❌ Cancel
+
+</button>
+
+` : ""}
 
         <br><br>
 
@@ -910,6 +934,51 @@ loadOrders();
 setInterval(() => {
   loadOrders();
 }, 10000);
+
+async function cancelOrder(id){
+
+const ok =
+confirm(
+"Cancel this order?"
+);
+
+if(!ok){
+return;
+}
+
+await fetch(
+
+"/api/orders/" +
+id +
+"/status",
+
+{
+method:"PUT",
+
+headers:{
+"Content-Type":
+"application/json",
+
+"x-admin-key":
+localStorage.getItem(
+"adminKey"
+)
+},
+
+body:JSON.stringify({
+
+status:
+"Cancelled"
+
+})
+
+}
+
+);
+
+loadOrders();
+
+}
 </script>
 
 

@@ -92,6 +92,16 @@ Logout
     <h1 id="totalRevenue">₹0</h1>
   </div>
 
+<div class="card">
+<h3>Total Customers</h3>
+<h1 id="customerCount">0</h1>
+</div>
+
+<div class="card">
+<h3>Repeat Customers</h3>
+<h1 id="repeatCustomerCount">0</h1>
+</div>
+
   <div class="card">
     <h3>VIP Points</h3>
     <h1 id="vipCustomer">-</h1>
@@ -361,20 +371,27 @@ r=>r.json()
 
 )
 
-const orders=
-await fetch(
-"/api/orders",
-{
-headers:{
-"x-admin-key":
-localStorage.getItem("adminKey")
-}
-}
-).then(r=>r.json());
+const orders = await fetch("/api/orders", {
+  headers: {
+    "x-admin-key": localStorage.getItem("adminKey")
+  }
+}).then(r => r.json());
+
+const uniqueCustomers = [
+  ...new Set(
+    orders
+      .filter(o => o.phone)
+      .map(o => o.phone)
+  )
+];
+
+const repeatCustomers = uniqueCustomers.filter(phone =>
+  orders.filter(o => o.phone === phone).length >= 2
+);
 const revenueMap = {};
 const hourMap = {};
 
-orders.forEach(order=>{
+activeOrders.forEach(order=>{
 if(order.time){
 
 const hour =
@@ -480,7 +497,7 @@ const today =
 new Date().toLocaleDateString();
 
 const todayOrdersData =
-orders.filter(order =>
+activeOrders.filter(order =>
 order.time &&
 order.time.includes(today)
 );
@@ -505,7 +522,7 @@ const currentYear =
 new Date().getFullYear();
 
 const monthlyOrders =
-orders.filter(order=>{
+activeOrders.filter(order=>{
 
 if(!order.time) return false;
 
@@ -530,23 +547,48 @@ monthlyRevenue.innerText =
 "₹" + monthlyRevenueValue;
 
 const avg =
-orders.length
+activeOrders.length
 ?
 Math.round(
-orders.reduce(
+activeOrders.reduce(
 (s,o)=>
 s + Number(o.total || 0),
 0
-) / orders.length
+) / activeOrders.length
 )
 : 0;
 
 avgOrderValue.innerText =
 "₹" + avg;
+if(
+document.getElementById(
+"customerCount"
+)
+){
+
+document.getElementById(
+"customerCount"
+).innerText =
+uniqueCustomers.length;
+
+}
+
+if(
+document.getElementById(
+"repeatCustomerCount"
+)
+){
+
+document.getElementById(
+"repeatCustomerCount"
+).innerText =
+repeatCustomers.length;
+
+}
 const revenueByFood = {};
 const foodCounter = {};
 
-orders.forEach(order=>{
+activeOrders.forEach(order=>{
 
 (order.items || [])
 .forEach(item=>{
@@ -965,6 +1007,11 @@ localStorage.getItem("adminKey")
 }
 }
 ).then(r=>r.json());
+
+const activeOrders =
+orders.filter(
+o => o.status !== "Cancelled"
+);
 
 const paidOrders =
 orders.filter(
