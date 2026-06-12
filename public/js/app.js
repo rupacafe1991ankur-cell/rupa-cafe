@@ -39,7 +39,7 @@ let appliedCoupon = "";
 let currentCoupon = null;
 let discount = 0;
 let pointsDiscount = 0;
-
+let subtotal = 0;
 let selected = null;
 
 function placeholder(name){
@@ -848,6 +848,20 @@ couponInput.value = "";
 document.getElementById("subtotal").innerText = "₹0";
 document.getElementById("discountAmount").innerText = "₹0";
 document.getElementById("total").innerText = "₹0";
+const grandTotalEl =
+document.getElementById("grandTotal");
+
+if(grandTotalEl){
+grandTotalEl.innerText = "₹0";
+}
+
+const discountText =
+document.getElementById("discountText");
+
+if(discountText){
+discountText.innerText = "Discount ₹0";
+}
+
 
 const discountText =
 document.getElementById("discountText");
@@ -929,14 +943,12 @@ onclick="increaseQty(${index})">
 
 `).join("");
 
-const subtotal =
-
+let subtotal =
 cart.reduce(
 (sum,item)=>
 sum + Number(item.price) * item.qty,
 0
 );
-
 if(currentCoupon){
 
 if(
@@ -2534,7 +2546,6 @@ if(cart[index].qty <= 0){
 cart.splice(index,1);
 }
 
-saveCart();
 renderCart();
 updatePopupQty();
 
