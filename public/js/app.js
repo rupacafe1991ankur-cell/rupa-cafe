@@ -164,7 +164,27 @@ contactText.innerText=
 site.contact||
 
 ""
+heroImages = [
 
+site.heroImage1,
+
+site.heroImage2,
+
+site.heroImage3,
+
+site.heroImage4
+
+].filter(Boolean);
+
+if(heroImages.length){
+
+document.getElementById(
+"heroSlider"
+).style.backgroundImage =
+
+`url('${heroImages[0]}')`;
+
+}
 
 copyrightText.innerText =
 site.copyright || "© 2026 Rupa Cafe"
@@ -1959,17 +1979,7 @@ document
 }
 // Hero Slider
 
-const heroImages = [
-
-"/images/cafe1.jpg",
-
-"/images/cafe2.jpg",
-
-"/images/cafe3.jpg",
-
-"/images/cafe4.jpg"
-
-];
+let heroImages = [];
 
 const heroTexts = [
 
@@ -1998,7 +2008,9 @@ text:"Hot & Fresh Food At Your Doorstep"
 let heroIndex = 0;
 
 function changeHero(){
-
+if(heroImages.length === 0){
+return;
+}
 const hero =
 document.getElementById("heroSlider");
 

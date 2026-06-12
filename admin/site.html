@@ -70,6 +70,23 @@ Logout
       <textarea id="heroText" placeholder="Hero Subtitle"></textarea>
 
       <textarea id="offer" placeholder="Special Offer"></textarea>
+      <h3>Hero Slider Images</h3>
+
+<input
+id="heroImage1"
+placeholder="Cloudinary Hero Image 1 URL">
+
+<input
+id="heroImage2"
+placeholder="Cloudinary Hero Image 2 URL">
+
+<input
+id="heroImage3"
+placeholder="Cloudinary Hero Image 3 URL">
+
+<input
+id="heroImage4"
+placeholder="Cloudinary Hero Image 4 URL">
 
       <textarea id="contact" placeholder="Contact Details"></textarea>
 
@@ -117,6 +134,18 @@ async function loadSite(){
   document.getElementById("offer").value =
   s.offer || "";
 
+  document.getElementById("heroImage1").value =
+  s.heroImage1 || "";
+
+  document.getElementById("heroImage2").value =
+  s.heroImage2 || "";
+
+  document.getElementById("heroImage3").value =
+  s.heroImage3 || "";
+
+  document.getElementById("heroImage4").value =
+  s.heroImage4 || "";
+
   document.getElementById("contact").value =
   s.contact || "";
   document.getElementById("whatsapp").value =
@@ -155,20 +184,23 @@ async function saveSite(){
       hero: document.getElementById("hero").value,
       heroText: document.getElementById("heroText").value,
       offer: document.getElementById("offer").value,
+      heroImage1:
+             document.getElementById("heroImage1").value,
+
+      heroImage2:
+             document.getElementById("heroImage2").value,
+
+      heroImage3:
+             document.getElementById("heroImage3").value,
+
+      heroImage4:
+             document.getElementById("heroImage4").value,
       contact: document.getElementById("contact").value,
       whatsapp: document.getElementById("whatsapp").value,
       copyright: document.getElementById("copyrightInput").value,
-      instagram:
-document.getElementById(
-"instagramInput"
-).value,
-
-facebook:
-document.getElementById(
-"facebookInput"
-).value,
-      invoiceFooter:
-      document.getElementById("invoiceFooter").value
+      instagram:document.getElementById("instagramInput").value,
+      facebook:document.getElementById("facebookInput").value,
+      invoiceFooter:document.getElementById("invoiceFooter").value
     })
   });
 
