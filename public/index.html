@@ -416,33 +416,57 @@ Address
 </div>
             <div id="deliveryBox" style="display:none;">
 
-                <input type="text" id="landmark" placeholder="Landmark">
+<input
+type="text"
+id="landmark"
+placeholder="Landmark">
 
-                <button type="button" class="btn" onclick="getLocation()">
+<button
+type="button"
+class="btn"
+onclick="getLocation()">
 
-                    Use Current Location
+📍 Use Current Location
 
-                </button>
+</button>
 
-                <input type="hidden" id="latitude">
+<input
+type="text"
+id="manualLocation"
+placeholder="Enter Delivery Area / Full Address">
 
-                <input type="hidden" id="longitude">
+<button
+type="button"
+class="btn gray"
+onclick="useManualLocation()">
 
-                <div id="mapLink"></div>
+🏠 Use Manual Address
 
-                <h4>
+</button>
 
-                    Delivery Charge ₹
+<input
+type="hidden"
+id="latitude">
 
-                    <span id="deliveryCharge">
+<input
+type="hidden"
+id="longitude">
 
-                        0
+<div id="mapLink"></div>
 
-                    </span>
+<h4>
 
-                </h4>
+Delivery Charge ₹
 
-            </div>
+<span id="deliveryCharge">
+
+0
+
+</span>
+
+</h4>
+
+</div>
 
             <button class="btn" onclick="
 placeOrder()

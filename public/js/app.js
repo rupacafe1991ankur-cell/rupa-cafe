@@ -1156,6 +1156,86 @@ calculateDelivery(lat,lng);
 
 }
 
+function useManualLocation(){
+
+const address =
+
+document.getElementById(
+"manualLocation"
+).value.trim();
+
+if(!address){
+
+alert(
+"Enter delivery address"
+);
+
+return;
+
+}
+
+document.getElementById(
+"mapLink"
+).innerHTML =
+
+`<b>📍 Delivery Address:</b>
+<br>
+${address}`;
+
+document.getElementById(
+"deliveryCharge"
+).innerText = 50;
+
+}
+
+function useManualLocation(){
+
+const address =
+
+document.getElementById(
+"manualLocation"
+).value.trim();
+
+if(!address){
+
+alert(
+"Please enter delivery address"
+);
+
+return;
+
+}
+
+document.getElementById(
+"latitude"
+).value = "manual";
+
+document.getElementById(
+"longitude"
+).value = "manual";
+
+document.getElementById(
+"mapLink"
+).innerHTML =
+
+`
+<b>📍 Delivery Address</b>
+<br>
+${address}
+`;
+
+document.getElementById(
+"deliveryCharge"
+).innerText = 50;
+
+renderCart();
+
+alert(
+"Address Selected"
+);
+
+}
+
 function calculateDelivery(lat,lng){
 
 const distance =
@@ -1194,6 +1274,8 @@ return;
 document.getElementById(
 "deliveryCharge"
 ).innerText = charge;
+
+renderCart();
 
 }
 
@@ -1344,7 +1426,20 @@ if(
 orderTypeVal === "delivery"
 &&
 latitudeVal === ""
+&&
+document.getElementById(
+"manualLocation"
+).value.trim() === ""
 ){
+
+alert(
+"Please select location OR enter address"
+);
+
+return;
+
+}
+{
 
 alert(
 "Please select delivery location"
@@ -1408,7 +1503,27 @@ phoneVal,
 
 address:
 
-addressVal,
+addressVal +
+
+(
+
+document.getElementById(
+"manualLocation"
+).value
+
+?
+
+"\n\nDelivery Address:\n" +
+
+document.getElementById(
+"manualLocation"
+).value
+
+:
+
+""
+
+),
 
 orderType:
 
