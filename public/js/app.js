@@ -36,6 +36,7 @@ renderCart();
 
 let redeemedPoints = 0;
 let appliedCoupon = "";
+let currentCoupon = null;
 let discount = 0;
 let pointsDiscount = 0;
 
@@ -670,9 +671,10 @@ updatePopupQty();
 
 function closePopup(){
 
-popup.style.display=
+selected = null;
 
-"none"
+document.getElementById("popup").style.display =
+"none";
 
 }
 
@@ -1008,6 +1010,7 @@ return;
 }
 appliedCoupon =
 coupon.code;
+currentCoupon = coupon;
 if(!coupon.active){
 
 alert(
@@ -1041,14 +1044,34 @@ return;
 
 const subtotal =
 cart.reduce(
-(sum,item)=>
-sum +
-(Number(item.price) * item.qty),
-0
+  (sum, item) =>
+    sum + (Number(item.price) * item.qty),
+  0
 );
+
+if(currentCoupon){
+
+  if(
+    subtotal >=
+    (currentCoupon.minOrder || 0)
+  ){
+
+    discount = Math.round(
+      subtotal *
+      (currentCoupon.discount / 100)
+    );
+
+  } else {
+
+    discount = 0;
+
+  }
+
+}
+
 if(
-subtotal <
-(coupon.minOrder || 0)
+  subtotal <
+  (coupon.minOrder || 0)
 ){
 
 alert(
