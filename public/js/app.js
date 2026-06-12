@@ -1007,7 +1007,17 @@ document.getElementById(
 "discountAmount"
 ).innerText =
 discount;
+const pointsSummary =
+document.getElementById(
+"summaryPointsDiscount"
+);
 
+if(pointsSummary){
+
+pointsSummary.innerText =
+pointsDiscount;
+
+}
 const discountText =
 document.getElementById("discountText");
 
@@ -1021,11 +1031,17 @@ document.getElementById(
 ).innerText =
 delivery;
 
-total.innerText =
+const finalTotal =
+Math.max(
+0,
 subtotal +
 delivery -
 discount -
-pointsDiscount;
+pointsDiscount
+);
+
+total.innerText =
+finalTotal;
 
 }
 

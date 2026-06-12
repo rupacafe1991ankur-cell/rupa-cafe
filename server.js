@@ -424,6 +424,21 @@ success:true
 
 // Orders APIs
 app.post("/api/order", async (req, res) => {
+  const items = req.body.items || [];
+
+const { data: menu, error: menuError } =
+await supabase
+.from("menu")
+.select("*");
+
+if(menuError){
+
+return res.status(500).json({
+success:false,
+message:"Menu load failed"
+});
+
+}
   const site =
 readJSON(siteFile,{});
 

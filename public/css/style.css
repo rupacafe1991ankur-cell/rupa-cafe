@@ -3,7 +3,39 @@
 *{box-sizing:border-box}
 body{margin:0;font-family:Arial,Helvetica,sans-serif;background:var(--cream);color:#222}
 a{text-decoration:none}
-.header{background:var(--red);color:#fff;padding:16px 7%;display:flex;justify-content:space-between;align-items:center;position:sticky;top:0;z-index:10;box-shadow:0 2px 14px rgba(0,0,0,.15)}
+.header{
+background:var(--red);
+color:#fff;
+padding:16px 4%;
+display:flex;
+align-items:center;
+gap:15px;
+position:sticky;
+top:0;
+z-index:10;
+box-shadow:0 2px 14px rgba(0,0,0,.15);
+flex-wrap:wrap;
+}
+
+.logo{
+font-size:28px;
+font-weight:800;
+white-space:nowrap;
+}
+
+.nav{
+display:flex;
+flex-wrap:wrap;
+gap:15px;
+margin-left:auto;
+}
+
+.nav a{
+color:white;
+font-weight:700;
+margin:0;
+white-space:nowrap;
+}
 .logo{font-size:28px;font-weight:800}
 .nav a{color:white;margin-left:22px;font-weight:700}
 .hero{
