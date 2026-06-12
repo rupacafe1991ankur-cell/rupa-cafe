@@ -28,9 +28,8 @@ onclick="window.location.href='/'">
 
 <div class="account-hero">
 <div class="account-avatar">
-<img
-id="profilePic"
-src="/images/default-user.png"
+<img id="profileImage"
+src="https://ui-avatars.com/api/?name=User&background=ffffff&color=ff6600&size=200"
 style="
 width:120px;
 height:120px;
@@ -272,6 +271,35 @@ return;
 document.getElementById("userName").innerText=user.name||"";
 document.getElementById("userPhone").innerText=user.phone||"";
 document.getElementById("userEmail").innerText=user.email||"";
+
+try {
+
+const pointsRes =
+await fetch(
+"/api/points/" +
+encodeURIComponent(user.phone)
+);
+
+const pointsData =
+await pointsRes.json();
+
+document.getElementById(
+"accountPoints"
+).innerText =
+pointsData.points || 0;
+
+} catch(err) {
+
+console.log(
+"Points Error",
+err
+);
+
+document.getElementById(
+"accountPoints"
+).innerText = 0;
+
+}
 
 const ordersRes =
 await fetch("/api/my-orders/" + encodeURIComponent(user.phone));
