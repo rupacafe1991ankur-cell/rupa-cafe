@@ -619,9 +619,13 @@ selected.available
 
 "Not Available"
 
-popupBtn.disabled=
+const popupBtn =
+document.getElementById("popupBtn");
 
-!selected.available
+if(popupBtn){
+popupBtn.disabled =
+!selected.available;
+}
 const recommendations =
 
 menu
@@ -713,7 +717,9 @@ updatePopupQty();
 
 }
 function updatePopupQty(){
-
+if(!selected){
+return;
+}
 const item = cart.find(
 c => c.id === selected.id
 );
@@ -896,6 +902,26 @@ cart.reduce(
 sum + Number(item.price) * item.qty,
 0
 );
+
+if(currentCoupon){
+
+if(
+subtotal >=
+(currentCoupon.minOrder || 0)
+){
+
+discount = Math.round(
+subtotal *
+(currentCoupon.discount / 100)
+);
+
+}else{
+
+discount = 0;
+
+}
+
+}
 
 const orderType =
 document.getElementById(
@@ -2449,6 +2475,8 @@ cart[index].qty++;
 
 renderCart();
 
+updatePopupQty();
+
 }
 
 function decreaseQty(index){
@@ -2462,6 +2490,8 @@ cart.splice(index,1);
 }
 
 renderCart();
+
+updatePopupQty();
 
 }
 function goDelivery(){
