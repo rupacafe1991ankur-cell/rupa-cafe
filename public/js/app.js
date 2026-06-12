@@ -826,11 +826,58 @@ updatePopupQty();
 
 function renderCart(){
 
-if(cart.length===0){
+if(cart.length === 0){
 
-cartItems.innerHTML = "Cart Empty";
+cartContainer.innerHTML =
+"<h3>Cart Empty</h3>";
 
-total.innerText = 0;
+subtotal = 0;
+discount = 0;
+currentCoupon = null;
+
+const couponInput =
+document.getElementById("couponCode");
+
+if(couponInput)
+couponInput.value = "";
+const subtotalEl =
+document.getElementById("subtotal");
+
+if(subtotalEl)
+subtotalEl.innerText = "₹0";
+
+const subtotalEl =
+document.getElementById("subtotal");
+
+if(subtotalEl)
+subtotalEl.innerText = "0";
+
+const discountAmountEl =
+document.getElementById("discountAmount");
+
+if(discountAmountEl)
+discountAmountEl.innerText = "0";
+
+const totalEl =
+document.getElementById("total");
+
+if(totalEl)
+totalEl.innerText = "0";
+
+const discountText =
+document.getElementById("discountText");
+
+if(discountText)
+discountText.innerText =
+"Discount ₹0";
+
+const totalEl =
+document.getElementById("grandTotal");
+
+if(totalEl)
+totalEl.innerText = "₹0";
+
+
 
 return;
 
@@ -973,6 +1020,14 @@ document.getElementById(
 ).innerText =
 discount;
 
+const discountText =
+document.getElementById("discountText");
+
+if(discountText){
+discountText.innerText =
+"Discount ₹" + discount;
+}
+
 document.getElementById(
 "summaryDelivery"
 ).innerText =
@@ -1000,7 +1055,8 @@ renderCart()
 
 }
 async function applyCoupon(){
-
+discount = 0;
+currentCoupon = null;
 const code =
 document.getElementById(
 "couponCode"
@@ -2693,5 +2749,27 @@ calculateDelivery(
 Number(lat),
 Number(lon)
 );
+
+}
+function goDineIn(){
+
+const orderType =
+document.getElementById("orderType");
+
+if(orderType){
+
+orderType.value = "dinein";
+
+orderType.dispatchEvent(
+new Event("change")
+);
+
+}
+
+document
+.getElementById("cart")
+?.scrollIntoView({
+behavior:"smooth"
+});
 
 }
