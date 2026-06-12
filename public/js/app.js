@@ -859,17 +859,10 @@ const discountText =
 document.getElementById("discountText");
 
 if(discountText){
-discountText.innerText = "Discount ₹0";
-}
-
-
-const discountText =
-document.getElementById("discountText");
-
-if(discountText){
 discountText.innerText =
 "Discount ₹" + discount;
 }
+
 const grandTotalEl =
 document.getElementById("grandTotal");
 
