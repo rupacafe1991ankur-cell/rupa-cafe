@@ -840,42 +840,25 @@ document.getElementById("couponCode");
 
 if(couponInput)
 couponInput.value = "";
-const subtotalEl =
-document.getElementById("subtotal");
-
-if(subtotalEl)
-subtotalEl.innerText = "₹0";
-
-const subtotalEl =
-document.getElementById("subtotal");
-
-if(subtotalEl)
-subtotalEl.innerText = "0";
-
-const discountAmountEl =
-document.getElementById("discountAmount");
-
-if(discountAmountEl)
-discountAmountEl.innerText = "0";
-
-const totalEl =
-document.getElementById("total");
-
-if(totalEl)
-totalEl.innerText = "0";
+document.getElementById("subtotal").innerText = "₹0";
+document.getElementById("discountAmount").innerText = "₹0";
+document.getElementById("total").innerText = "₹0";
 
 const discountText =
 document.getElementById("discountText");
 
-if(discountText)
+if(discountText){
 discountText.innerText =
 "Discount ₹0";
+}
 
-const totalEl =
+const grandTotalEl =
 document.getElementById("grandTotal");
 
-if(totalEl)
-totalEl.innerText = "₹0";
+if(grandTotalEl){
+grandTotalEl.innerText =
+"₹0";
+}
 
 
 
