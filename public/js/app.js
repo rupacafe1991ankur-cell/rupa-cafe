@@ -863,16 +863,6 @@ discountText.innerText =
 "Discount ₹" + discount;
 }
 
-const grandTotalEl =
-document.getElementById("grandTotal");
-
-if(grandTotalEl){
-grandTotalEl.innerText =
-"₹0";
-}
-
-
-
 return;
 
 }
