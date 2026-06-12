@@ -32,17 +32,16 @@ onclick="window.location.href='/'">
 id="profilePic"
 src="/images/default-user.png"
 style="
-width:100px;
-height:100px;
+width:120px;
+height:120px;
 border-radius:50%;
 object-fit:cover;
+border:4px solid white;
+box-shadow:0 4px 20px rgba(0,0,0,.2);
+background:white;
 ">
 </div>
 
-<input
-type="file"
-id="profileUpload"
-accept="image/*">
 <h1>
 👋 Welcome,
 <span id="userName"></span>
@@ -238,62 +237,7 @@ window.location.replace("/login.html");
 
 </script>
 
-<script>
 
-const upload =
-document.getElementById(
-"profileUpload"
-);
-
-upload.addEventListener(
-"change",
-function(e){
-
-const file =
-e.target.files[0];
-
-if(!file) return;
-
-const reader =
-new FileReader();
-
-reader.onload =
-function(){
-
-localStorage.setItem(
-"profilePic",
-reader.result
-);
-
-document
-.getElementById(
-"profilePic"
-).src =
-reader.result;
-
-};
-
-reader.readAsDataURL(file);
-
-}
-);
-
-const savedPic =
-localStorage.getItem(
-"profilePic"
-);
-
-if(savedPic){
-
-document
-.getElementById(
-"profilePic"
-).src =
-savedPic;
-
-}
-
-</script>
 <script>
 
 
