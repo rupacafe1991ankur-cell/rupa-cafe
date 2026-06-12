@@ -1548,19 +1548,37 @@ if(data.success){
 
   if(paymentMethod === "counter"){
 
-  localStorage.setItem(
-    "lastOrderId",
-    data.order.id
-  );
+if(redeemedPoints > 0){
 
-  alert(
-    "Order Placed Successfully. Pay At Counter Selected."
-  );
+await fetch(
+"/api/redeem-points",
+{
+method:"POST",
+headers:{
+"Content-Type":"application/json"
+},
+body:JSON.stringify({
+phone: phoneVal,
+points: redeemedPoints
+})
+}
+);
 
-  location.href =
-  "/order-success.html";
+}
 
-  return;
+localStorage.setItem(
+"lastOrderId",
+data.order.id
+);
+
+alert(
+"Order Placed Successfully. Pay At Counter Selected."
+);
+
+location.href =
+"/order-success.html";
+
+return;
 }
 const rpOrder =
 await fetch(
@@ -2228,48 +2246,6 @@ Math.floor(points / 100) * 100;
 pointsDiscount =
 redeemedPoints / 10;
 
-const remainingPoints =
-points - redeemedPoints;
-
-const user =
-JSON.parse(
-localStorage.getItem(
-"rupaUser"
-)
-);
-
-if(user){
-
-const response =
-await fetch(
-"/api/points/" +
-user.phone,
-{
-method:"PUT",
-headers:{
-"Content-Type":
-"application/json"
-},
-body:JSON.stringify({
-points:remainingPoints
-})
-}
-);
-
-const result =
-await response.json();
-
-if(!result.success){
-
-alert(
-"Failed to update points"
-);
-
-return;
-}
-
-}
-
 document.getElementById(
 "pointsDiscount"
 ).innerText =
@@ -2279,7 +2255,7 @@ pointsDiscount;
 document.getElementById(
 "userPoints"
 ).innerText =
-remainingPoints;
+points - redeemedPoints;
 
 renderCart();
 
