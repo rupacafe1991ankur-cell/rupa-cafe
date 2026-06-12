@@ -1529,6 +1529,8 @@ coupon:
 appliedCoupon,
 couponDiscount:
 discount,
+loyaltyDiscount:
+pointsDiscount,
 status:
 
 "Pending"
@@ -2205,11 +2207,9 @@ data.points || 0;
 async function redeemPoints(){
 
 const points = Number(
-
 document.getElementById(
 "userPoints"
 ).innerText
-
 );
 
 if(points < 100){
@@ -2228,12 +2228,58 @@ Math.floor(points / 100) * 100;
 pointsDiscount =
 redeemedPoints / 10;
 
+const remainingPoints =
+points - redeemedPoints;
+
+const user =
+JSON.parse(
+localStorage.getItem(
+"rupaUser"
+)
+);
+
+if(user){
+
+const response =
+await fetch(
+"/api/points/" +
+user.phone,
+{
+method:"PUT",
+headers:{
+"Content-Type":
+"application/json"
+},
+body:JSON.stringify({
+points:remainingPoints
+})
+}
+);
+
+const result =
+await response.json();
+
+if(!result.success){
+
+alert(
+"Failed to update points"
+);
+
+return;
+}
+
+}
+
 document.getElementById(
 "pointsDiscount"
 ).innerText =
-
 "Points Discount ₹" +
 pointsDiscount;
+
+document.getElementById(
+"userPoints"
+).innerText =
+remainingPoints;
 
 renderCart();
 

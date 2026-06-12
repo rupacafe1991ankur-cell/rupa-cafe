@@ -575,6 +575,10 @@ appliedCoupon,
 
 couponDiscount:
 couponDiscount,
+loyaltyDiscount:
+Number(
+req.body.loyaltyDiscount || 0
+),
 
 paymentMethod:
 req.body.paymentMethod || "online",
@@ -622,6 +626,8 @@ items: order.items,
 total: order.total,
 coupon: order.coupon,
 coupon_discount: order.couponDiscount,
+loyalty_discount:
+order.loyaltyDiscount,
 payment_method: order.paymentMethod,
 payment_status: order.paymentStatus,
 payment_id: order.paymentId,
@@ -1771,7 +1777,9 @@ await supabase
 
 res.json(data || []);
 
-});app.get("/api/points/:phone", async (req,res)=>{
+});
+
+app.get("/api/points/:phone", async (req,res)=>{
 
 const { data:user } =
 await supabase
@@ -1790,6 +1798,35 @@ user.points
 });
 
 });
+
+app.put("/api/points/:phone", async (req,res)=>{
+
+const newPoints =
+Number(req.body.points) || 0;
+
+const { error } =
+await supabase
+.from("points")
+.update({
+points:newPoints
+})
+.eq("phone", req.params.phone);
+
+if(error){
+
+return res.status(500).json({
+success:false,
+message:error.message
+});
+
+}
+
+res.json({
+success:true
+});
+
+});
+
 app.get("/api/loyalty-leaderboard", async (req,res)=>{
 
 const { data } =

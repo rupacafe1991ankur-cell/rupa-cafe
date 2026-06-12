@@ -606,8 +606,33 @@ display:inline-block;
 <br>
 
 <small>
-₹${o.couponDiscount || 0} OFF
+₹${o.coupon_discount || o.couponDiscount || 0} OFF
 </small>
+
+${
+
+(o.loyalty_discount || 0) > 0
+
+?
+
+`<br>
+
+<small
+style="
+color:#16a34a;
+font-weight:bold;
+">
+
+🎁 Loyalty:
+₹${o.loyalty_discount} OFF
+
+</small>`
+
+:
+
+""
+
+}
 
 </span>`
 
