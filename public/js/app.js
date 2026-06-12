@@ -828,8 +828,13 @@ function renderCart(){
 
 if(cart.length === 0){
 
+const cartContainer =
+document.getElementById("cartContainer");
+
+if(cartContainer){
 cartContainer.innerHTML =
 "<h3>Cart Empty</h3>";
+}
 
 subtotal = 0;
 discount = 0;
@@ -849,9 +854,8 @@ document.getElementById("discountText");
 
 if(discountText){
 discountText.innerText =
-"Discount ₹0";
+"Discount ₹" + discount;
 }
-
 const grandTotalEl =
 document.getElementById("grandTotal");
 
@@ -2520,16 +2524,18 @@ updatePopupQty();
 
 function decreaseQty(index){
 
+if(!cart[index]){
+return;
+}
+
 cart[index].qty--;
 
 if(cart[index].qty <= 0){
-
 cart.splice(index,1);
-
 }
 
+saveCart();
 renderCart();
-
 updatePopupQty();
 
 }
