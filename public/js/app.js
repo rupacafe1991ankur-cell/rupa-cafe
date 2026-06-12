@@ -926,7 +926,7 @@ onclick="increaseQty(${index})">
 
 `).join("");
 
-let subtotal =
+subtotal =
 cart.reduce(
 (sum,item)=>
 sum + Number(item.price) * item.qty,
