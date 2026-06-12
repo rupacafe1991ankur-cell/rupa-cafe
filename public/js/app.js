@@ -828,39 +828,45 @@ function renderCart(){
 
 if(cart.length === 0){
 
-const cartContainer =
-document.getElementById("cartContainer");
+const cartItems =
+document.getElementById("cartItems");
 
-if(cartContainer){
-cartContainer.innerHTML =
+if(cartItems){
+cartItems.innerHTML =
 "<h3>Cart Empty</h3>";
 }
 
 subtotal = 0;
 discount = 0;
+pointsDiscount = 0;
 currentCoupon = null;
+appliedCoupon = "";
 
 const couponInput =
 document.getElementById("couponCode");
 
-if(couponInput)
+if(couponInput){
 couponInput.value = "";
-document.getElementById("subtotal").innerText = "₹0";
-document.getElementById("discountAmount").innerText = "₹0";
-document.getElementById("total").innerText = "₹0";
-const grandTotalEl =
-document.getElementById("grandTotal");
-
-if(grandTotalEl){
-grandTotalEl.innerText = "₹0";
 }
+
+document.getElementById("subtotal").innerText = "0";
+document.getElementById("discountAmount").innerText = "0";
+document.getElementById("total").innerText = "0";
 
 const discountText =
 document.getElementById("discountText");
 
 if(discountText){
 discountText.innerText =
-"Discount ₹" + discount;
+"Discount ₹0";
+}
+
+const pointsText =
+document.getElementById("pointsDiscount");
+
+if(pointsText){
+pointsText.innerText =
+"Points Discount ₹0";
 }
 
 return;
@@ -2533,6 +2539,7 @@ renderCart();
 updatePopupQty();
 
 }
+
 function goDelivery(){
 
 const orderType =
