@@ -430,19 +430,22 @@ onclick="getLocation()">
 
 </button>
 
+<div style="position:relative;">
+
 <input
 type="text"
 id="manualLocation"
-placeholder="Enter Delivery Area / Full Address">
+placeholder="Search Delivery Address">
 
-<button
-type="button"
-class="btn gray"
-onclick="useManualLocation()">
+<div
+id="locationSuggestions"
+class="location-suggestions">
 
-🏠 Use Manual Address
+</div>
 
-</button>
+</div>
+
+
 
 <input
 type="hidden"

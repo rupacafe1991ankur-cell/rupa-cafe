@@ -1092,3 +1092,32 @@ width:100%;
 }
 
 }
+.location-suggestions{
+
+position:absolute;
+left:0;
+right:0;
+top:100%;
+background:white;
+border:1px solid #ddd;
+border-radius:10px;
+max-height:250px;
+overflow-y:auto;
+z-index:9999;
+display:none;
+
+}
+
+.location-item{
+
+padding:12px;
+cursor:pointer;
+border-bottom:1px solid #eee;
+
+}
+
+.location-item:hover{
+
+background:#f5f5f5;
+
+}

@@ -959,27 +959,7 @@ discount -
 pointsDiscount;
 
 }
-function increaseQty(index){
 
-cart[index].qty++;
-
-renderCart();
-
-}
-
-function decreaseQty(index){
-
-cart[index].qty--;
-
-if(cart[index].qty <= 0){
-
-cart.splice(index,1);
-
-}
-
-renderCart();
-
-}
 function removeCart(index){
 
 cart.splice(
@@ -1064,6 +1044,7 @@ return;
 
 const subtotal =
 cart.reduce(
+  
   (sum, item) =>
     sum + (Number(item.price) * item.qty),
   0
@@ -1156,85 +1137,6 @@ calculateDelivery(lat,lng);
 
 }
 
-function useManualLocation(){
-
-const address =
-
-document.getElementById(
-"manualLocation"
-).value.trim();
-
-if(!address){
-
-alert(
-"Enter delivery address"
-);
-
-return;
-
-}
-
-document.getElementById(
-"mapLink"
-).innerHTML =
-
-`<b>📍 Delivery Address:</b>
-<br>
-${address}`;
-
-document.getElementById(
-"deliveryCharge"
-).innerText = 50;
-
-}
-
-function useManualLocation(){
-
-const address =
-
-document.getElementById(
-"manualLocation"
-).value.trim();
-
-if(!address){
-
-alert(
-"Please enter delivery address"
-);
-
-return;
-
-}
-
-document.getElementById(
-"latitude"
-).value = "manual";
-
-document.getElementById(
-"longitude"
-).value = "manual";
-
-document.getElementById(
-"mapLink"
-).innerHTML =
-
-`
-<b>📍 Delivery Address</b>
-<br>
-${address}
-`;
-
-document.getElementById(
-"deliveryCharge"
-).innerText = 50;
-
-renderCart();
-
-alert(
-"Address Selected"
-);
-
-}
 
 function calculateDelivery(lat,lng){
 
@@ -1265,7 +1167,15 @@ charge = 80;
 }
 else{
 
-alert("Sorry, delivery unavailable in your area.");
+document.getElementById(
+"deliveryCharge"
+).innerText = 0;
+
+renderCart();
+
+alert(
+"🚫 Delivery unavailable in this area."
+);
 
 return;
 
@@ -1422,32 +1332,7 @@ return
 
 }
 
-if(
-orderTypeVal === "delivery"
-&&
-latitudeVal === ""
-&&
-document.getElementById(
-"manualLocation"
-).value.trim() === ""
-){
 
-alert(
-"Please select location OR enter address"
-);
-
-return;
-
-}
-{
-
-alert(
-"Please select delivery location"
-);
-
-return;
-
-}
 
 const foodTotal =
 
@@ -1923,6 +1808,19 @@ loadSite()
 loadFeaturedCoupon();
 loadDeals();
 loadReviews();
+const locationInput =
+document.getElementById(
+"manualLocation"
+);
+
+if(locationInput){
+
+locationInput.addEventListener(
+"input",
+searchLocation
+);
+
+}
 async function submitReview(){
 
 const name =
@@ -2653,5 +2551,117 @@ document.getElementById(
 "couponPopup"
 ).style.display =
 "none";
+
+}
+
+let locationTimer;
+
+async function searchLocation(){
+
+clearTimeout(locationTimer);
+
+locationTimer = setTimeout(
+async ()=>{
+
+const query =
+
+document.getElementById(
+"manualLocation"
+).value.trim();
+
+if(query.length < 3){
+
+document.getElementById(
+"locationSuggestions"
+).style.display = "none";
+
+return;
+
+}
+
+const results =
+await fetch(
+
+`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query)}`
+
+).then(r=>r.json());
+
+const box =
+document.getElementById(
+"locationSuggestions"
+);
+
+box.innerHTML =
+
+results.slice(0,5).map(place=>`
+
+<div
+class="location-item"
+onclick="selectLocation(
+'${place.display_name.replace(/'/g,"")}',
+'${place.lat}',
+'${place.lon}'
+)">
+
+${place.display_name}
+
+</div>
+
+`).join("");
+
+box.style.display =
+
+results.length
+?
+"block"
+:
+"none";
+
+},
+400
+);
+
+}
+
+function selectLocation(
+address,
+lat,
+lon
+){
+
+document.getElementById(
+"manualLocation"
+).value =
+address;
+
+document.getElementById(
+"locationSuggestions"
+).style.display =
+"none";
+
+document.getElementById(
+"latitude"
+).value =
+lat;
+
+document.getElementById(
+"longitude"
+).value =
+lon;
+
+document.getElementById(
+"mapLink"
+).innerHTML =
+
+`
+<b>📍 Delivery Address</b>
+<br>
+${address}
+`;
+
+calculateDelivery(
+Number(lat),
+Number(lon)
+);
 
 }

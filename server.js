@@ -192,7 +192,26 @@ fileSize:
 }
 
 });
+app.post(
+"/api/upload-hero",
+adminAuth,
+upload.single("image"),
+async (req,res)=>{
 
+if(!req.file){
+
+return res.status(400).json({
+success:false
+});
+
+}
+
+res.json({
+success:true,
+url:req.file.path
+});
+
+});
 // Site settings
 app.get("/api/site", async (req,res)=>{
 

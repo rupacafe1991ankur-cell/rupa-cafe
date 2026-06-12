@@ -77,17 +77,63 @@ id="heroImage1"
 placeholder="Cloudinary Hero Image 1 URL">
 
 <input
+type="file"
+id="heroUpload1"
+accept="image/*">
+
+<img
+id="heroPreview1"
+style="
+width:150px;
+margin-top:10px;
+display:block;
+">
+
+<input
 id="heroImage2"
 placeholder="Cloudinary Hero Image 2 URL">
+<input
+type="file"
+id="heroUpload2"
+accept="image/*">
 
+<img
+id="heroPreview2"
+style="
+width:150px;
+margin-top:10px;
+display:block;
+">
 <input
 id="heroImage3"
 placeholder="Cloudinary Hero Image 3 URL">
+<input
+type="file"
+id="heroUpload3"
+accept="image/*">
 
+<img
+id="heroPreview3"
+style="
+width:150px;
+margin-top:10px;
+display:block;
+">
 <input
 id="heroImage4"
 placeholder="Cloudinary Hero Image 4 URL">
+<input
+type="file"
+id="heroUpload4"
+accept="image/*">
 
+<img
+id="heroPreview4"
+style="
+width:150px;
+margin-top:10px;
+display:block;
+">
       <textarea id="contact" placeholder="Contact Details"></textarea>
 
       <textarea id="copyrightInput" placeholder="Copyright Text"></textarea>
@@ -115,6 +161,64 @@ placeholder="Invoice Footer Message">
 <script src="/admin/js/admin.js"></script>
 
 <script>
+
+async function uploadHero(
+fileInputId,
+urlInputId,
+previewId
+){
+
+const file =
+document.getElementById(
+fileInputId
+).files[0];
+
+if(!file) return;
+
+const fd =
+new FormData();
+
+fd.append(
+"image",
+file
+);
+
+const r =
+await fetch(
+"/api/upload-hero",
+{
+method:"POST",
+
+headers:{
+"x-admin-key":
+localStorage.getItem(
+"adminKey"
+)
+},
+
+body:fd
+}
+);
+
+const data =
+await r.json();
+
+if(data.success){
+
+document.getElementById(
+urlInputId
+).value =
+data.url;
+
+document.getElementById(
+previewId
+).src =
+data.url;
+
+}
+
+}
+
 async function loadSite(){
 
   const s = await fetch("/api/site").then(r => r.json());
@@ -166,6 +270,25 @@ s.facebook || "";
 s.invoiceFooter || "";
   document.getElementById("adminName").innerText =
   s.adminName || "Rupa Cafe Admin Panel";
+  document.getElementById(
+"heroPreview1"
+).src =
+s.heroImage1 || "";
+
+document.getElementById(
+"heroPreview2"
+).src =
+s.heroImage2 || "";
+
+document.getElementById(
+"heroPreview3"
+).src =
+s.heroImage3 || "";
+
+document.getElementById(
+"heroPreview4"
+).src =
+s.heroImage4 || "";
 }
 
 async function saveSite(){
@@ -205,7 +328,65 @@ async function saveSite(){
   });
 
   alert("Website settings saved successfully");
+     document
+.getElementById(
+"heroUpload1"
+)
+.addEventListener(
+"change",
+()=>{
+uploadHero(
+"heroUpload1",
+"heroImage1",
+"heroPreview1"
+);
+}
+);
 
+document
+.getElementById(
+"heroUpload2"
+)
+.addEventListener(
+"change",
+()=>{
+uploadHero(
+"heroUpload2",
+"heroImage2",
+"heroPreview2"
+);
+}
+);
+
+document
+.getElementById(
+"heroUpload3"
+)
+.addEventListener(
+"change",
+()=>{
+uploadHero(
+"heroUpload3",
+"heroImage3",
+"heroPreview3"
+);
+}
+);
+
+document
+.getElementById(
+"heroUpload4"
+)
+.addEventListener(
+"change",
+()=>{
+uploadHero(
+"heroUpload4",
+"heroImage4",
+"heroPreview4"
+);
+}
+);
   loadSite();
 }
 
