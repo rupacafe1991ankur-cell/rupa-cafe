@@ -376,17 +376,21 @@ const orders = await fetch("/api/orders", {
     "x-admin-key": localStorage.getItem("adminKey")
   }
 }).then(r => r.json());
-
+const activeOrders = orders.filter(
+  o => o.status !== "Cancelled"
+);
 const uniqueCustomers = [
   ...new Set(
-    orders
+    activeOrders
       .filter(o => o.phone)
       .map(o => o.phone)
   )
 ];
 
 const repeatCustomers = uniqueCustomers.filter(phone =>
-  orders.filter(o => o.phone === phone).length >= 2
+  activeOrders.filter(
+  o => o.phone === phone
+).length >= 2
 );
 const revenueMap = {};
 const hourMap = {};
