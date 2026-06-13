@@ -116,11 +116,8 @@ overlay.style.display =
 
 }
 
-}siteName.innerText=
+}
 
-site.name||
-
-"Rupa Cafe"
 const floatingWhatsapp =
 document.getElementById(
 "floatingWhatsapp"
