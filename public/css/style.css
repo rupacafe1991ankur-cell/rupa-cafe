@@ -1152,11 +1152,24 @@ text-align:center;
 }
 
 .hero-btn{
-display:inline-block;
-width:220px;
-padding:16px 0;
+display:inline-flex;
+align-items:center;
+justify-content:center;
+
+width:230px;
+height:72px;
+
+padding:0;
+
 font-size:18px;
-margin-top:25px;
+font-weight:700;
+
+margin-top:40px;
+
+border-radius:50px;
+
+position:relative;
+z-index:5;
 }
 
 .social-floating{
@@ -1340,6 +1353,59 @@ width:160px !important;
 height:56px !important;
 
 font-size:16px !important;
+
+}
+
+}
+
+/* ===== FINAL MOBILE FLOATING FIX ===== */
+
+@media(max-width:768px){
+
+.social-floating{
+
+right:20px !important;
+
+bottom:245px !important;
+
+display:flex !important;
+flex-direction:column !important;
+
+gap:15px !important;
+
+}
+
+.social-icon{
+
+width:50px !important;
+height:50px !important;
+
+}
+
+.whatsapp-float{
+
+right:20px !important;
+
+bottom:130px !important;
+
+width:50px !important;
+height:50px !important;
+
+padding:0 !important;
+
+border-radius:50% !important;
+
+display:flex !important;
+align-items:center !important;
+justify-content:center !important;
+
+}
+
+.order-float{
+
+right:20px !important;
+
+bottom:40px !important;
 
 }
 
