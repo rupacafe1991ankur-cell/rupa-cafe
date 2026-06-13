@@ -2578,31 +2578,32 @@ updatePopupQty();
 
 }
 
-function goDelivery(){
+function goDelivery() {
 
-const orderType =
-document.getElementById(
-"orderType"
-);
+    const orderType = document.getElementById("orderType");
 
-if(orderType){
+    if (orderType) {
 
-orderType.value =
-"delivery";
+        orderType.value = "delivery";
 
-orderType.dispatchEvent(
-new Event("change")
-);
+        orderType.dispatchEvent(
+            new Event("change")
+        );
+
+    }
+
+    setTimeout(() => {
+
+        document.getElementById("menu")
+            ?.scrollIntoView({
+                behavior: "smooth",
+                block: "start"
+            });
+
+    }, 100);
 
 }
 
-document
-.getElementById("menu")
-?.scrollIntoView({
-behavior:"smooth"
-});
-
-}
 
 async function openCouponPopup(){
 
@@ -2777,25 +2778,28 @@ Number(lon)
 );
 
 }
-function goDineIn(){
+function goDineIn() {
 
-const orderType =
-document.getElementById("orderType");
+    const orderType = document.getElementById("orderType");
 
-if(orderType){
+    if (orderType) {
 
-orderType.value = "dinein";
+        orderType.value = "dinein";
 
-orderType.dispatchEvent(
-new Event("change")
-);
+        orderType.dispatchEvent(
+            new Event("change")
+        );
 
-}
+    }
 
-document
-.getElementById("menu")
-?.scrollIntoView({
-behavior:"smooth"
-});
+    setTimeout(() => {
+
+        document.getElementById("menu")
+            ?.scrollIntoView({
+                behavior: "smooth",
+                block: "start"
+            });
+
+    }, 100);
 
 }
