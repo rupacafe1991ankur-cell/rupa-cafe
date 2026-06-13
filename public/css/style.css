@@ -1349,3 +1349,45 @@ transform:rotate(180deg);
 }
 
 }
+
+/* CATEGORY FILTER TOGGLE */
+
+#filterToggleBtn{
+    width:90%;
+    max-width:320px;
+    padding:14px 20px;
+    border:none;
+    border-radius:12px;
+    background:#e31b23;
+    color:white;
+    font-size:16px;
+    font-weight:700;
+    cursor:pointer;
+    box-shadow:0 4px 12px rgba(0,0,0,.15);
+}
+
+#categoryFiltersWrapper{
+    animation:fadeDown .25s ease;
+}
+
+#categoryFilters{
+    display:flex;
+    flex-wrap:wrap;
+    justify-content:center;
+    gap:10px;
+}
+
+#categoryFilters .btn{
+    margin:0;
+}
+
+@keyframes fadeDown{
+    from{
+        opacity:0;
+        transform:translateY(-10px);
+    }
+    to{
+        opacity:1;
+        transform:translateY(0);
+    }
+}

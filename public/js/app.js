@@ -2939,3 +2939,51 @@ document.addEventListener("touchmove", function(e){
     }
 
 });
+
+document.addEventListener(
+"DOMContentLoaded",
+function(){
+
+const filterBtn =
+document.getElementById(
+"filterToggleBtn"
+);
+
+const wrapper =
+document.getElementById(
+"categoryFiltersWrapper"
+);
+
+if(
+!filterBtn ||
+!wrapper
+){
+return;
+}
+
+filterBtn.addEventListener(
+"click",
+function(){
+
+const isOpen =
+wrapper.style.display === "block";
+
+if(isOpen){
+
+wrapper.style.display = "none";
+
+filterBtn.innerHTML =
+"🔍 Browse Categories";
+
+}else{
+
+wrapper.style.display = "block";
+
+filterBtn.innerHTML =
+"🔼 Hide Categories";
+
+}
+
+});
+
+});
