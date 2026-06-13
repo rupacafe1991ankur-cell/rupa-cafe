@@ -1391,3 +1391,19 @@ transform:rotate(180deg);
         transform:translateY(0);
     }
 }
+
+.neon-logo{
+    height: 65px;
+    width: auto;
+    display: block;
+    object-fit: contain;
+}
+
+@media (max-width:768px){
+
+    .neon-logo{
+        height: 50px;
+        max-width: 220px;
+    }
+
+}
