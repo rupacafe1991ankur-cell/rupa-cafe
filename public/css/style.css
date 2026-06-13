@@ -1241,3 +1241,46 @@ text-align:center;
 }
 
 }
+
+/* ===== DESKTOP FLOAT FIX ===== */
+
+@media(min-width:769px){
+
+.social-floating{
+position:fixed;
+right:20px;
+bottom:180px;
+
+display:flex;
+flex-direction:column;
+gap:15px;
+
+z-index:99999;
+}
+
+.whatsapp-float{
+position:fixed !important;
+
+right:20px !important;
+bottom:90px !important;
+
+width:auto !important;
+height:auto !important;
+
+padding:14px 24px !important;
+
+border-radius:40px !important;
+}
+
+.whatsapp-float span{
+display:inline-block !important;
+}
+
+.order-float{
+position:fixed !important;
+
+right:20px !important;
+bottom:20px !important;
+}
+
+}

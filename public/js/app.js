@@ -1546,7 +1546,10 @@ await res.json()
 
 if(data.success){
 
-  if(paymentMethod === "counter"){
+  if(
+paymentMethod === "counter" ||
+paymentMethod === "cod"
+){
 
 if(redeemedPoints > 0){
 
