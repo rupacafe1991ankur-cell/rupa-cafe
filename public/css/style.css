@@ -1158,53 +1158,60 @@ transform:scale(1.12);
 
 /* ===== FINAL MOBILE FLOATING FIX ===== */
 
+/* ===== PERFECT MOBILE FLOATING ALIGNMENT ===== */
+
 @media(max-width:768px){
 
 .social-floating{
+position:fixed !important;
 
-right:20px !important;
-
-bottom:245px !important;
+right:18px !important;
+bottom:240px !important;
 
 display:flex !important;
 flex-direction:column !important;
 
-gap:15px !important;
+gap:12px !important;
 
+z-index:99999 !important;
 }
 
 .social-icon{
-
-width:50px !important;
-height:50px !important;
-
+width:52px !important;
+height:52px !important;
+display:block !important;
 }
 
 .whatsapp-float{
+position:fixed !important;
 
-right:20px !important;
+right:18px !important;
+bottom:164px !important;
 
-bottom:130px !important;
-
-width:50px !important;
-height:50px !important;
+width:52px !important;
+height:52px !important;
 
 padding:0 !important;
-
-border-radius:50% !important;
 
 display:flex !important;
 align-items:center !important;
 justify-content:center !important;
 
+border-radius:50% !important;
+
+z-index:99999 !important;
+}
+
+.whatsapp-float span{
+display:none !important;
 }
 
 .order-float{
+position:fixed !important;
 
-right:20px !important;
+right:18px !important;
+bottom:78px !important;
 
-bottom:40px !important;
-
+z-index:99999 !important;
 }
-
 }
