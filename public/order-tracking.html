@@ -107,6 +107,8 @@ id="progressBar">
 Loading...
 </p>
 
+<div id="cancelBox"></div>
+
 </div>
 
 </div>
@@ -146,6 +148,41 @@ return;
 
 const order =
 data.order;
+
+const cancelBox =
+document.getElementById(
+"cancelBox"
+);
+
+if(order.status === "Pending"){
+
+cancelBox.innerHTML =
+
+`
+
+<button
+onclick="cancelOrder(${order.id})"
+style="
+background:#dc2626;
+color:white;
+padding:10px 20px;
+border:none;
+border-radius:8px;
+cursor:pointer;
+margin-top:20px;
+">
+
+❌ Cancel Order
+
+</button>
+
+`;
+
+}else{
+
+cancelBox.innerHTML = "";
+
+}
 
 document.getElementById(
 "orderId"
@@ -264,6 +301,48 @@ setInterval(
 loadTracking,
 10000
 );
+
+async function cancelOrder(id){
+
+if(
+!confirm(
+"Cancel this order?"
+)
+){
+return;
+}
+
+const data =
+await fetch(
+
+"/api/order/" +
+id +
+"/cancel",
+
+{
+method:"PUT"
+}
+
+).then(r=>r.json());
+
+if(data.success){
+
+alert(
+"Order Cancelled"
+);
+
+loadTracking();
+
+}else{
+
+alert(
+data.message ||
+"Unable to cancel"
+);
+
+}
+
+}
 
 </script>
 

@@ -92,6 +92,12 @@ Logout
     <h1 id="totalRevenue">₹0</h1>
   </div>
 
+  <div class="card">
+<h3>Top Spending Customer</h3>
+<h1 id="topSpender">-</h1>
+<p id="topSpenderAmount">₹0</p>
+</div>
+
 <div class="card">
 <h3>Total Customers</h3>
 <h1 id="customerCount">0</h1>
@@ -102,6 +108,10 @@ Logout
 <h1 id="repeatCustomerCount">0</h1>
 </div>
 
+<div class="card">
+<h3>Cancelled Orders</h3>
+<h1 id="cancelledOrdersCount">0</h1>
+</div>
   <div class="card">
     <h3>VIP Points</h3>
     <h1 id="vipCustomer">-</h1>
@@ -388,10 +398,15 @@ const uniqueCustomers = [
 ];
 
 const repeatCustomers = uniqueCustomers.filter(phone =>
+
   activeOrders.filter(
   o => o.phone === phone
 ).length >= 2
 );
+const cancelledOrders =
+orders.filter(
+o => o.status === "Cancelled"
+).length;
 const revenueMap = {};
 const hourMap = {};
 
@@ -588,7 +603,48 @@ document.getElementById(
 ).innerText =
 repeatCustomers.length;
 
+document.getElementById(
+"cancelledOrdersCount"
+).innerText =
+cancelledOrders;
+
 }
+
+const customerSpend = {};
+
+activeOrders.forEach(order=>{
+
+if(!order.phone) return;
+
+customerSpend[order.phone] =
+(customerSpend[order.phone] || 0)
++
+Number(order.total || 0);
+
+});
+
+const topSpenderData =
+
+Object.entries(customerSpend)
+
+.sort(
+(a,b)=>b[1]-a[1]
+)[0];
+
+if(topSpenderData){
+
+document.getElementById(
+"topSpender"
+).innerText =
+topSpenderData[0];
+
+document.getElementById(
+"topSpenderAmount"
+).innerText =
+"₹" + topSpenderData[1];
+
+}
+
 const revenueByFood = {};
 const foodCounter = {};
 

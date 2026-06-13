@@ -948,6 +948,61 @@ order
 });
 
 });
+
+app.put(
+"/api/order/:id/cancel",
+async (req,res)=>{
+
+const { data:order } =
+await supabase
+.from("orders")
+.select("*")
+.eq("id", req.params.id)
+.single();
+
+if(!order){
+
+return res.json({
+success:false
+});
+
+}
+
+if(order.status !== "Pending"){
+
+return res.json({
+
+success:false,
+
+message:
+"Order can no longer be cancelled"
+
+});
+
+}
+
+const { error } =
+await supabase
+.from("orders")
+.update({
+status:"Cancelled"
+})
+.eq("id", req.params.id);
+
+if(error){
+
+return res.json({
+success:false
+});
+
+}
+
+res.json({
+success:true
+});
+
+});
+
 app.get("/api/my-orders/:phone", async (req,res)=>{
 
 const { data, error } =
