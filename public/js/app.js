@@ -2117,10 +2117,25 @@ color:#666;
 }
 function toggleMenu(){
 
-document
-.querySelector(".nav")
-.classList
-.toggle("show");
+const nav = document.querySelector(".nav");
+
+nav.classList.toggle("show");
+
+if(window.innerWidth <= 768){
+
+if(nav.classList.contains("show")){
+
+document.body.style.overflow = "hidden";
+document.body.style.height = "100vh";
+
+}else{
+
+document.body.style.overflow = "";
+document.body.style.height = "";
+
+}
+
+}
 
 }
 // Hero Slider
@@ -2864,3 +2879,26 @@ document.body.classList.toggle(
 
 }
 );
+
+document.addEventListener("click", function(e){
+
+const nav = document.querySelector(".nav");
+
+const menuBtn =
+document.querySelector(".menu-toggle");
+
+if(
+window.innerWidth <= 768 &&
+nav.classList.contains("show") &&
+!nav.contains(e.target) &&
+!menuBtn.contains(e.target)
+){
+
+nav.classList.remove("show");
+
+document.body.style.overflow = "";
+document.body.style.height = "";
+
+}
+
+});
