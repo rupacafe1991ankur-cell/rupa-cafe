@@ -1418,7 +1418,31 @@ return
 
 }
 
+if(orderTypeVal === "delivery"){
 
+const deliveryAddress =
+document.getElementById("manualLocation").value.trim();
+
+const lat =
+document.getElementById("latitude").value.trim();
+
+const lng =
+document.getElementById("longitude").value.trim();
+
+if(
+deliveryAddress === "" ||
+lat === "" ||
+lng === ""
+){
+
+alert(
+"📍 Please select your delivery location before placing the order."
+);
+
+return;
+}
+
+}
 
 const foodTotal =
 
@@ -2806,3 +2830,37 @@ function goDineIn() {
     }, 100);
 
 }
+document.addEventListener(
+"DOMContentLoaded",
+function(){
+
+if(window.innerWidth > 768){
+return;
+}
+
+document.body.classList.add(
+"social-hidden"
+);
+
+const toggleBtn =
+document.getElementById(
+"socialToggleBtn"
+);
+
+if(!toggleBtn){
+return;
+}
+
+toggleBtn.addEventListener(
+"click",
+function(){
+
+document.body.classList.toggle(
+"social-hidden"
+);
+
+}
+);
+
+}
+);
