@@ -2597,11 +2597,9 @@ new Event("change")
 }
 
 document
-.getElementById("cart")
+.getElementById("menu")
 ?.scrollIntoView({
-
 behavior:"smooth"
-
 });
 
 }
@@ -2795,7 +2793,7 @@ new Event("change")
 }
 
 document
-.getElementById("cart")
+.getElementById("menu")
 ?.scrollIntoView({
 behavior:"smooth"
 });

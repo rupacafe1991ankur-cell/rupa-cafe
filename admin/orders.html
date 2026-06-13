@@ -443,8 +443,8 @@ pendingCount;
         <b>
 
         ${o.orderType === "delivery"
-        ? "Home Delivery"
-        : "Table " + (o.tableNumber || "N/A")}
+? "Home Delivery"
+: "Table " + (o.tableNumber || o.table_number || "N/A")}
 
         </b>
       </td>
