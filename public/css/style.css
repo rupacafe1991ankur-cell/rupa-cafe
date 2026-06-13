@@ -1148,27 +1148,15 @@ border-radius:25px;
 
 .hero-overlay{
 position:relative;
-min-height:300px;
+text-align:center;
 }
 
 .hero-btn{
-
-position:absolute;
-
-left:50%;
-
-bottom:80px;
-
-transform:translateX(-50%);
-
+display:inline-block;
 width:220px;
-
-text-align:center;
-
 padding:16px 0;
-
 font-size:18px;
-
+margin-top:25px;
 }
 
 .social-floating{
@@ -1286,5 +1274,73 @@ transition:.3s;
 .social-icon:hover{
 
 transform:scale(1.12);
+
+}
+
+/* ===== MOBILE FLOATING BUTTONS FIX ===== */
+
+@media(max-width:768px){
+
+.social-floating{
+right:15px !important;
+left:auto !important;
+bottom:230px !important;
+gap:10px !important;
+}
+
+.social-icon{
+width:48px !important;
+height:48px !important;
+border-radius:12px !important;
+}
+
+.whatsapp-float{
+
+right:15px !important;
+bottom:145px !important;
+
+width:48px !important;
+height:48px !important;
+
+padding:0 !important;
+
+border-radius:50% !important;
+
+display:flex !important;
+align-items:center !important;
+justify-content:center !important;
+}
+
+.whatsapp-float span{
+display:none !important;
+}
+
+.whatsapp-float img,
+.whatsapp-float i{
+font-size:24px !important;
+width:24px !important;
+height:24px !important;
+}
+
+.order-float{
+
+right:15px !important;
+bottom:75px !important;
+
+padding:12px 18px !important;
+
+font-size:15px !important;
+
+}
+
+.delivery-pill,
+.dinein-btn{
+
+width:160px !important;
+height:56px !important;
+
+font-size:16px !important;
+
+}
 
 }
