@@ -2902,3 +2902,40 @@ document.body.style.height = "";
 }
 
 });
+
+/* AUTO CLOSE MOBILE MENU */
+
+let touchStartY = 0;
+
+document.addEventListener("touchstart", function(e){
+
+    touchStartY = e.touches[0].clientY;
+
+});
+
+document.addEventListener("touchmove", function(e){
+
+    const nav = document.querySelector(".nav");
+
+    if(
+        window.innerWidth <= 768 &&
+        nav &&
+        nav.classList.contains("show")
+    ){
+
+        const touchEndY = e.touches[0].clientY;
+
+        const swipeDown = touchEndY - touchStartY > 50;
+
+        if(swipeDown){
+
+            nav.classList.remove("show");
+
+            document.body.style.overflow = "";
+            document.body.style.height = "";
+
+        }
+
+    }
+
+});
