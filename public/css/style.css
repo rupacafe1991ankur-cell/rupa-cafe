@@ -1393,17 +1393,41 @@ transform:rotate(180deg);
 }
 
 .neon-logo{
-    height: 95px;
-    width: auto;
-    display: block;
-    object-fit: contain;
+    height:95px;
+    width:auto;
+    display:block;
+    object-fit:contain;
 }
 
+/* MOBILE LOGO CENTER + BIGGER */
 @media (max-width:768px){
 
-    .neon-logo{
-        height: 50px;
-        max-width: 220px;
+    .header{
+        justify-content:center;
     }
 
+    .logo{
+        width:100%;
+        text-align:center;
+        display:flex;
+        justify-content:center;
+        align-items:center;
+        margin-bottom:8px;
+    }
+
+    .neon-logo{
+        height:75px !important;
+        max-width:320px !important;
+        width:auto !important;
+        display:block;
+        margin:0 auto;
+    }
+
+    .delivery-pill{
+        flex:1;
+    }
+
+    .dinein-btn{
+        flex:1;
+    }
 }
