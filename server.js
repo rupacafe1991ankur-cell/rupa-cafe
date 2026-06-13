@@ -7,6 +7,7 @@ const rateLimit = require("express-rate-limit");
 const bcrypt = require("bcrypt");
 const Razorpay = require("razorpay");
 const crypto = require("crypto");
+const { SitemapStream, streamToPromise } = require("sitemap");
 const express = require("express");
 const helmet = require("helmet");
 const multer = require("multer");
@@ -2531,6 +2532,67 @@ success:true
 
 });
 
+app.get("/sitemap.xml", async (req, res) => {
+
+try {
+
+const smStream = new SitemapStream({
+hostname: "https://rupacafe.in"
+});
+
+smStream.write({
+url: "/",
+changefreq: "daily",
+priority: 1.0
+});
+
+smStream.write({
+url: "/menu.html",
+changefreq: "daily",
+priority: 0.9
+});
+
+smStream.write({
+url: "/contact.html",
+changefreq: "monthly",
+priority: 0.8
+});
+
+smStream.write({
+url: "/about.html",
+changefreq: "monthly",
+priority: 0.8
+});
+
+smStream.write({
+url: "/gallery.html",
+changefreq: "weekly",
+priority: 0.7
+});
+
+smStream.end();
+
+const sitemap =
+await streamToPromise(smStream);
+
+res.header(
+"Content-Type",
+"application/xml"
+);
+
+res.send(
+sitemap.toString()
+);
+
+} catch(err){
+
+console.log(err);
+
+res.status(500).end();
+
+}
+
+});
 
 app.listen(PORT, () => {
   console.log("======================================");
