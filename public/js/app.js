@@ -1920,13 +1920,13 @@ Current Status:
 <b>${currentStatus}</b>
 </p>
 ${
-order.status === "Pending"
+data.order.status === "Pending"
 ?
 
 `
 <button
 class="btn cancel-order-btn"
-onclick="cancelOrder('${order.id}')">
+onclick="cancelOrder('${data.order.id}')">
 
 ❌ Cancel Order
 
