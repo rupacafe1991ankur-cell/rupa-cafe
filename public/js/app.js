@@ -1919,6 +1919,24 @@ Order #${data.order.id}
 Current Status:
 <b>${currentStatus}</b>
 </p>
+${
+order.status === "Pending"
+?
+
+`
+<button
+class="btn cancel-order-btn"
+onclick="cancelOrder('${order.id}')">
+
+❌ Cancel Order
+
+</button>
+`
+
+:
+
+""
+}
 `;
 
 document.getElementById(
@@ -3073,5 +3091,43 @@ currentScroll <= 0
 },
 { passive:true }
 );
+
+}
+
+async function cancelOrder(orderId){
+
+const ok = confirm(
+"Are you sure you want to cancel this order?"
+);
+
+if(!ok) return;
+
+const res = await fetch(
+"/api/order/" + orderId + "/cancel",
+{
+method:"PUT"
+}
+);
+
+const data = await res.json();
+
+if(data.success){
+
+alert(
+"✅ Order Cancelled Successfully"
+);
+
+document.getElementById(
+"trackBtn"
+).click();
+
+}else{
+
+alert(
+data.message ||
+"Unable to cancel order"
+);
+
+}
 
 }

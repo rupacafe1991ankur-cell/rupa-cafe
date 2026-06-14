@@ -1568,3 +1568,15 @@ transform:translateY(-100%);
 }
 
 }
+
+.cancel-order-btn{
+background:#e31b23 !important;
+color:white;
+width:100%;
+max-width:220px;
+margin-top:15px;
+}
+
+.cancel-order-btn:hover{
+opacity:.9;
+}
