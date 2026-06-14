@@ -2114,25 +2114,22 @@ color:#666;
 }
 function toggleMenu(){
 
-const nav = document.querySelector(".nav");
+const nav =
+document.querySelector(".nav");
+
+const header =
+document.querySelector(".header");
+
+if(!nav) return;
+
+/* header ko force visible rakho */
+if(header){
+header.classList.remove(
+"header-hidden"
+);
+}
 
 nav.classList.toggle("show");
-
-if(window.innerWidth <= 768){
-
-if(nav.classList.contains("show")){
-
-document.body.style.overflow = "hidden";
-document.body.style.height = "100vh";
-
-}else{
-
-document.body.style.overflow = "";
-document.body.style.height = "";
-
-}
-
-}
 
 }
 // Hero Slider
@@ -3006,9 +3003,50 @@ const currentScroll =
 window.pageYOffset ||
 document.documentElement.scrollTop;
 
-/* SCROLL UP → HIDE HEADER */
+if(window.innerWidth <= 768){
+
+let lastScrollTop = 0;
+
+window.addEventListener(
+"scroll",
+function(){
+
+const header =
+document.querySelector(".header");
+
+const nav =
+document.querySelector(".nav");
+
+if(!header) return;
+
+/* menu open ho to header hamesha visible */
+if(
+nav &&
+nav.classList.contains("show")
+){
+header.classList.remove(
+"header-hidden"
+);
+return;
+}
+
+const currentScroll =
+window.pageYOffset ||
+document.documentElement.scrollTop;
+
+/* UP = HEADER SHOW */
 
 if(currentScroll < lastScrollTop - 10){
+
+header.classList.remove(
+"header-hidden"
+);
+
+}
+
+/* DOWN = HEADER HIDE */
+
+else if(currentScroll > lastScrollTop + 10){
 
 header.classList.add(
 "header-hidden"
@@ -3016,12 +3054,13 @@ header.classList.add(
 
 }
 
-/* SCROLL DOWN → SHOW HEADER */
+lastScrollTop =
+currentScroll <= 0
+? 0
+: currentScroll;
 
-else if(currentScroll > lastScrollTop + 10){
-
-header.classList.remove(
-"header-hidden"
+},
+{ passive:true }
 );
 
 }
