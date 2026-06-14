@@ -1501,3 +1501,17 @@ transform:rotate(180deg);
     z-index:9999;
 }
 }
+
+/* MOBILE AUTO HEADER HIDE/SHOW */
+
+@media(max-width:768px){
+
+.header{
+transition:transform .3s ease;
+}
+
+.header.header-hidden{
+transform:translateY(-100%);
+}
+
+}

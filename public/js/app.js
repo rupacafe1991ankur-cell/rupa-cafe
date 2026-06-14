@@ -2984,3 +2984,55 @@ filterBtn.innerHTML =
 });
 
 });
+
+/* =========================
+   MOBILE HEADER SHOW/HIDE
+========================= */
+
+if(window.innerWidth <= 768){
+
+let lastScrollTop = 0;
+
+window.addEventListener(
+"scroll",
+function(){
+
+const header =
+document.querySelector(".header");
+
+if(!header) return;
+
+const currentScroll =
+window.pageYOffset ||
+document.documentElement.scrollTop;
+
+/* SCROLL UP → HIDE HEADER */
+
+if(currentScroll < lastScrollTop - 10){
+
+header.classList.add(
+"header-hidden"
+);
+
+}
+
+/* SCROLL DOWN → SHOW HEADER */
+
+else if(currentScroll > lastScrollTop + 10){
+
+header.classList.remove(
+"header-hidden"
+);
+
+}
+
+lastScrollTop =
+currentScroll <= 0
+? 0
+: currentScroll;
+
+},
+{ passive:true }
+);
+
+}
