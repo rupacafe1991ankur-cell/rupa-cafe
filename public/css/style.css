@@ -1431,3 +1431,73 @@ transform:rotate(180deg);
         flex:1;
     }
 }
+
+/* ===== MOBILE FOOD POPUP FIX ===== */
+
+@media (max-width: 768px){
+
+.popup{
+    padding:10px !important;
+    align-items:flex-start !important;
+}
+
+.popup-box{
+    width:100% !important;
+    max-width:100% !important;
+    max-height:95vh !important;
+    overflow-y:auto !important;
+    border-radius:20px !important;
+    padding:15px !important;
+}
+
+.popup-top{
+    display:flex !important;
+    flex-direction:column !important;
+    gap:15px !important;
+}
+
+.popup-image{
+    width:100% !important;
+}
+
+.popup-image img,
+#popupImg{
+    width:100% !important;
+    height:220px !important;
+    object-fit:cover !important;
+    border-radius:15px !important;
+}
+
+.popup-info{
+    width:100% !important;
+}
+
+#popupName{
+    font-size:34px !important;
+    line-height:1.2 !important;
+}
+
+#popupDesc{
+    font-size:16px !important;
+    line-height:1.6 !important;
+}
+
+.popup-price-row{
+    flex-wrap:wrap !important;
+    gap:12px !important;
+}
+
+#popupPrice{
+    font-size:38px !important;
+}
+
+#recommendations{
+    grid-template-columns:1fr !important;
+}
+
+.popup-back-btn{
+    position:sticky;
+    top:0;
+    z-index:9999;
+}
+}
