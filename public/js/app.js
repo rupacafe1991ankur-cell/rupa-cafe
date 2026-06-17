@@ -1193,22 +1193,31 @@ lng
 
 let charge = 0;
 
-if(distance <= 3){
+if(distance <= 1){
+
+charge = 20;
+
+}
+else if(distance <= 2){
 
 charge = 30;
 
 }
-else if(distance <= 5){
-
-charge = 50;
-
-}
-else if(distance <= 8){
-
-charge = 80;
-
-}
 else{
+
+document.getElementById(
+"deliveryCharge"
+).innerText = 0;
+
+renderCart();
+
+alert(
+"🚫 Delivery available only within 2 KM of Rupa Cafe."
+);
+
+return;
+
+}
 
 document.getElementById(
 "deliveryCharge"
@@ -1230,7 +1239,6 @@ document.getElementById(
 
 renderCart();
 
-}
 
 function getDistanceFromLatLonInKm(
 lat1,
