@@ -301,7 +301,55 @@ renderCart();
 orderType.dispatchEvent(
 new Event("change")
 );
+/* =========================
+   QR TABLE AUTO DETECT
+========================= */
 
+const params =
+new URLSearchParams(
+window.location.search
+);
+
+const tableFromQR =
+params.get("table");
+
+if(tableFromQR){
+
+  const orderType =
+  document.getElementById(
+  "orderType"
+  );
+
+  const tableInput =
+  document.getElementById(
+  "tableNumber"
+  );
+
+  if(orderType){
+
+    orderType.value =
+    "dinein";
+
+    orderType.dispatchEvent(
+    new Event("change")
+    );
+
+  }
+
+  if(tableInput){
+
+    tableInput.value =
+    tableFromQR;
+
+    tableInput.readOnly =
+    true;
+
+    tableInput.style.background =
+    "#f5f5f5";
+
+  }
+
+}
 });
 
 const cafeLat = 29.685183;
