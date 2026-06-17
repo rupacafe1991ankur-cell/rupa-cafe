@@ -1243,42 +1243,27 @@ let charge = 0;
 
 if(distance <= 1){
 
-charge = 20;
+    charge = 20;
 
 }
 else if(distance <= 2){
 
-charge = 30;
+    charge = 30;
 
 }
 else{
 
-document.getElementById(
-"deliveryCharge"
-).innerText = 0;
+    document.getElementById(
+    "deliveryCharge"
+    ).innerText = 0;
 
-renderCart();
+    renderCart();
 
-alert(
-"🚫 Delivery available only within 2 KM of Rupa Cafe."
-);
+    alert(
+    "🚫 Delivery available only within 2 KM of Rupa Cafe."
+    );
 
-return;
-
-}
-
-document.getElementById(
-"deliveryCharge"
-).innerText = 0;
-
-renderCart();
-
-alert(
-"🚫 Delivery unavailable in this area."
-);
-
-return;
-
+    return;
 }
 
 document.getElementById(
@@ -1287,6 +1272,7 @@ document.getElementById(
 
 renderCart();
 
+}
 
 function getDistanceFromLatLonInKm(
 lat1,
