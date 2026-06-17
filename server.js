@@ -534,6 +534,22 @@ coupon.code;
 }
 
 }
+// Payment validation
+
+if (
+  (req.body.orderType === "delivery" ||
+   req.body.orderType === "takeaway")
+  &&
+  req.body.paymentMethod !== "online"
+) {
+
+  return res.status(400).json({
+    success: false,
+    message:
+      "Only online payment is allowed for Delivery and Takeaway orders."
+  });
+
+}
   const order = {
 id: Date.now(),
 

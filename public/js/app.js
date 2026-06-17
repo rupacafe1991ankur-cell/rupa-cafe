@@ -267,74 +267,34 @@ if(!orderType) return;
 
 orderType.addEventListener("change", function(){
 
-const deliveryBox =
-document.getElementById("deliveryBox");
+  const deliveryBox = document.getElementById("deliveryBox");
+  const tableBox = document.getElementById("tableBox");
+  const paymentSelect = document.getElementById("paymentMethod");
 
-const tableBox =
-document.getElementById("tableBox");
-
-if(this.value === "delivery"){
-  const paymentSelect =
-document.getElementById("paymentMethod");
-
-paymentSelect.innerHTML = `
-<option value="cod">
-Cash On Delivery
-</option>
-
-<option value="online">
-Pay Online
-</option>
-`;
-document.getElementById(
-"deliveryETA"
-).innerHTML =
-"🛵 Estimated Delivery: 30-40 Minutes";
-
-deliveryBox.style.display = "block";
-tableBox.style.display = "none";
-
-}
-else if(this.value === "takeaway"){
-  const paymentSelect =
-document.getElementById("paymentMethod");
-
-paymentSelect.innerHTML = `
-<option value="counter">
-Pay At Counter
-</option>
-
-<option value="online">
-Pay Online
-</option>
-`;
-
-deliveryBox.style.display = "none";
-tableBox.style.display = "none";
-
-}
-else{
-  const paymentSelect =
-document.getElementById("paymentMethod");
-
-paymentSelect.innerHTML = `
-<option value="counter">
-Pay At Counter
-</option>
-
-<option value="online">
-Pay Online
-</option>
-`;
-    document.getElementById(
-"deliveryETA"
-).innerHTML =
-"🍽️ Serving Time: 10-15 Minutes";
-
-deliveryBox.style.display = "none";
-tableBox.style.display = "block";
-
-}
+  if (this.value === "delivery") {
+    paymentSelect.innerHTML = `
+      <option value="online">Pay Online</option>
+    `;
+    paymentSelect.value = "online";
+    document.getElementById("deliveryETA").innerHTML = "🛵 Estimated Delivery: 30-40 Minutes";
+    deliveryBox.style.display = "block";
+    tableBox.style.display = "none";
+  } else if (this.value === "takeaway") {
+    paymentSelect.innerHTML = `
+      <option value="online">Pay Online</option>
+    `;
+    paymentSelect.value = "online";
+    deliveryBox.style.display = "none";
+    tableBox.style.display = "none";
+  } else {
+    paymentSelect.innerHTML = `
+      <option value="counter">Pay At Counter</option>
+      <option value="online">Pay Online</option>
+    `;
+    document.getElementById("deliveryETA").innerHTML = "🍽️ Serving Time: 10-15 Minutes";
+    deliveryBox.style.display = "none";
+    tableBox.style.display = "block";
+  }
 
 });
 renderCart();
