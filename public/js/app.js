@@ -272,20 +272,34 @@ orderType.addEventListener("change", function(){
   const paymentSelect = document.getElementById("paymentMethod");
 
   if (this.value === "delivery") {
+
     paymentSelect.innerHTML = `
-      <option value="online">Pay Online</option>
+      <option value="cod">
+      Cash On Delivery
+      </option>
     `;
-    paymentSelect.value = "online";
-    document.getElementById("deliveryETA").innerHTML = "🛵 Estimated Delivery: 30-40 Minutes";
+
+    paymentSelect.value = "cod";
+
+    document.getElementById("deliveryETA").innerHTML =
+    "🛵 Estimated Delivery: 30-40 Minutes";
+
     deliveryBox.style.display = "block";
     tableBox.style.display = "none";
+
   } else if (this.value === "takeaway") {
+
     paymentSelect.innerHTML = `
-      <option value="online">Pay Online</option>
+      <option value="counter">
+      Pay At Counter
+      </option>
     `;
-    paymentSelect.value = "online";
+
+    paymentSelect.value = "counter";
+
     deliveryBox.style.display = "none";
     tableBox.style.display = "none";
+
   } else {
     paymentSelect.innerHTML = `
       <option value="counter">Pay At Counter</option>

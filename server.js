@@ -537,17 +537,30 @@ coupon.code;
 // Payment validation
 
 if (
-  (req.body.orderType === "delivery" ||
-   req.body.orderType === "takeaway")
-  &&
-  req.body.paymentMethod !== "online"
-) {
+req.body.orderType === "delivery"
+&&
+req.body.paymentMethod !== "cod"
+){
 
-  return res.status(400).json({
-    success: false,
-    message:
-      "Only online payment is allowed for Delivery and Takeaway orders."
-  });
+return res.status(400).json({
+success:false,
+message:
+"Delivery orders must use Cash On Delivery."
+});
+
+}
+
+if (
+req.body.orderType === "takeaway"
+&&
+req.body.paymentMethod !== "counter"
+){
+
+return res.status(400).json({
+success:false,
+message:
+"Take Away orders must use Pay At Counter."
+});
 
 }
   const order = {
