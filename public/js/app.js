@@ -301,14 +301,22 @@ orderType.addEventListener("change", function(){
     tableBox.style.display = "none";
 
   } else {
+
     paymentSelect.innerHTML = `
-      <option value="counter">Pay At Counter</option>
-      <option value="online">Pay Online</option>
+      <option value="counter">
+      Pay At Counter
+      </option>
     `;
-    document.getElementById("deliveryETA").innerHTML = "🍽️ Serving Time: 10-15 Minutes";
+
+    paymentSelect.value = "counter";
+
+    document.getElementById("deliveryETA").innerHTML =
+    "🍽️ Serving Time: 10-15 Minutes";
+
     deliveryBox.style.display = "none";
     tableBox.style.display = "block";
-  }
+
+}
 
 });
 renderCart();

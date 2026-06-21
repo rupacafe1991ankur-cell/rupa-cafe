@@ -563,6 +563,19 @@ message:
 });
 
 }
+if (
+req.body.orderType === "dinein"
+&&
+req.body.paymentMethod !== "counter"
+){
+
+return res.status(400).json({
+success:false,
+message:
+"Dine In orders must use Pay At Counter."
+});
+
+}
   const order = {
 id: Date.now(),
 
