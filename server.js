@@ -320,6 +320,21 @@ app.post("/api/hero-slides", async (req, res) => {
             image
 
         } = req.body;
+        
+          // Get next sort order
+const { count, error: countError } = await supabase
+  .from("hero_slides")
+  .select("*", {
+    count: "exact",
+    head: true
+  });
+
+if (countError) {
+  return res.status(500).json({
+    success: false,
+    message: countError.message
+  });
+}
 
         const { data, error } = await supabase
 
@@ -339,7 +354,7 @@ app.post("/api/hero-slides", async (req, res) => {
 
                 active: true,
 
-                sort_order: (count || 0) + 1
+                sort_order: Number(count || 0) + 1
 
             }])
 
