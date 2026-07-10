@@ -258,6 +258,28 @@ success:true
 
 });
 
+// ================= HERO SLIDES =================
+
+// Get Hero Slides
+
+app.get("/api/hero-slides", async (req,res)=>{
+
+const { data,error } =
+await supabase
+.from("hero_slides")
+.select("*")
+.order("sort_order");
+
+if(error){
+
+return res.json([]);
+
+}
+
+res.json(data || []);
+
+});
+
 // Menu APIs
 app.get("/api/menu", async (req,res)=>{
 
