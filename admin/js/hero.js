@@ -23,7 +23,7 @@ async function loadSlides() {
         }
 
         const slides = json.data;
-
+         window.heroSlides = slides;
         if (slides.length === 0) {
 
             list.innerHTML = `
@@ -80,13 +80,42 @@ onerror="this.src='https://placehold.co/220x140?text=No+Image'"
 
             <p>
 
-            <b>Status :</b>
+<b>Status :</b>
 
-            ${slide.active ? "🟢 Active" : "🔴 Disabled"}
+${slide.active ? "🟢 Active" : "🔴 Disabled"}
 
-            </p>
+</p>
 
-        </div>
+<div style="
+margin-top:15px;
+display:flex;
+gap:10px;
+flex-wrap:wrap;
+">
+
+<button
+class="btn"
+onclick="editSlide(${slide.id})">
+
+✏ Edit
+
+</button>
+
+<button
+class="btn"
+style="
+background:#d32f2f;
+color:white;
+"
+onclick="deleteSlide(${slide.id})">
+
+🗑 Delete
+
+</button>
+
+</div>
+
+</div>
 
         `).join("");
 
@@ -177,6 +206,97 @@ async function saveSlide() {
         alert(json.message || "Failed");
 
     }
+
+}
+
+async function deleteSlide(id){
+
+const ok = confirm(
+"Delete this Hero Slide?"
+);
+
+if(!ok) return;
+
+const res =
+await fetch(
+"/api/hero-slides/" + id,
+{
+method:"DELETE"
+}
+);
+
+const data =
+await res.json();
+
+if(data.success){
+
+alert(
+"Hero Slide Deleted Successfully"
+);
+
+loadSlides();
+
+}else{
+
+alert(
+data.message ||
+"Delete Failed"
+);
+
+}
+
+}
+
+let editingSlideId = null;
+
+function editSlide(id){
+
+const slide =
+window.heroSlides.find(
+s => s.id === id
+);
+
+if(!slide) return;
+
+editingSlideId = id;
+
+document.getElementById(
+"title"
+).value =
+slide.title || "";
+
+document.getElementById(
+"subtitle"
+).value =
+slide.subtitle || "";
+
+document.getElementById(
+"buttonText"
+).value =
+slide.button_text || "";
+
+document.getElementById(
+"buttonLink"
+).value =
+slide.button_link || "";
+
+document.getElementById(
+"image"
+).value =
+slide.image || "";
+
+document.querySelector(
+".btn"
+).innerText =
+"💾 Update Hero Slide";
+
+window.scrollTo({
+
+top:0,
+
+behavior:"smooth"
+
+});
 
 }
 
