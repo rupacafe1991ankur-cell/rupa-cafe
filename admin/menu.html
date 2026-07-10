@@ -132,8 +132,10 @@ id="foodBestSeller">
 <script>
 let menuData = [];
 
-function placeholder(name){
-  return "https://via.placeholder.com/100x70?text=" + encodeURIComponent(name || "Food");
+function placeholder(){
+
+    return "/images/no-image.png";
+
 }
 
 async function loadAdminName(){
@@ -143,8 +145,25 @@ async function loadAdminName(){
 }
 
 async function loadMenu(){
-  const res = await fetch("/api/menu");
-  menuData = await res.json();
+  try {
+
+    const res = await fetch("/api/menu");
+
+    if (!res.ok) {
+        throw new Error("Menu API Error");
+    }
+
+    menuData = await res.json();
+
+} catch (err) {
+
+    console.error(err);
+
+    alert("Unable to load menu.");
+
+    return;
+
+}
 
   const foodRows = document.getElementById("foodRows");
 

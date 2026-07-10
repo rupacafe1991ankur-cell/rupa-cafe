@@ -401,26 +401,38 @@ success:true
 });
 
 app.delete("/api/menu/:id", adminAuth, async (req, res) => {
-  let menu = readJSON(menuFile, []);
-  const id = Number(req.params.id);
-  const { error } =
-await supabase
-.from("menu")
-.delete()
-.eq("id", Number(req.params.id));
 
-if(error){
+  try {
 
-return res.json({
-success:false
-});
+    const { error } = await supabase
+      .from("menu")
+      .delete()
+      .eq("id", Number(req.params.id));
 
-}
+    if (error) {
+      console.log("DELETE MENU ERROR:", error);
 
-res.json({
-success:true
-});
-  res.json({ success: true });
+      return res.status(500).json({
+        success: false,
+        message: error.message
+      });
+    }
+
+    return res.json({
+      success: true
+    });
+
+  } catch (err) {
+
+    console.log(err);
+
+    return res.status(500).json({
+      success: false,
+      message: err.message
+    });
+
+  }
+
 });
 
 // Orders APIs
