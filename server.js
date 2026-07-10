@@ -265,7 +265,12 @@ success:true
 app.get("/api/hero-slides", async (req, res) => {
 
   try {
-
+          const { count } = await supabase
+    .from("hero_slides")
+    .select("*", {
+        count: "exact",
+        head: true
+    });
     const { data, error } = await supabase
       .from("hero_slides")
       .select("*")
@@ -334,7 +339,7 @@ app.post("/api/hero-slides", async (req, res) => {
 
                 active: true,
 
-                sort_order: Date.now()
+                sort_order: (count || 0) + 1
 
             }])
 
