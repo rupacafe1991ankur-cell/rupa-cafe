@@ -400,6 +400,94 @@ if (countError) {
 
 });
 
+app.put("/api/hero-slides/:id", async (req, res) => {
+
+    try {
+
+        const id = Number(req.params.id);
+
+        const {
+            title,
+            subtitle,
+            button_text,
+            button_link,
+            image,
+            active
+        } = req.body;
+
+        const { data, error } = await supabase
+            .from("hero_slides")
+            .update({
+                title,
+                subtitle,
+                button_text,
+                button_link,
+                image,
+                active
+            })
+            .eq("id", id)
+            .select();
+
+        if (error) {
+
+            return res.status(500).json({
+                success: false,
+                message: error.message
+            });
+
+        }
+
+        res.json({
+            success: true,
+            data
+        });
+
+    } catch (err) {
+
+        res.status(500).json({
+            success: false,
+            message: err.message
+        });
+
+    }
+
+});
+
+app.delete("/api/hero-slides/:id", async (req, res) => {
+
+    try {
+
+        const id = Number(req.params.id);
+
+        const { error } = await supabase
+            .from("hero_slides")
+            .delete()
+            .eq("id", id);
+
+        if (error) {
+
+            return res.status(500).json({
+                success: false,
+                message: error.message
+            });
+
+        }
+
+        res.json({
+            success: true
+        });
+
+    } catch (err) {
+
+        res.status(500).json({
+            success: false,
+            message: err.message
+        });
+
+    }
+
+});
+
 // Menu APIs
 app.get("/api/menu", async (req,res)=>{
 
