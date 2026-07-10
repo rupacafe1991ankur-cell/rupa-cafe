@@ -1,4 +1,6 @@
+let editingSlideId = null;
 async function loadSlides() {
+
 
     const list = document.getElementById("slidesList");
 
@@ -155,37 +157,56 @@ async function saveSlide() {
 
     }
 
-    const res = await fetch("/api/hero-slides", {
+    const url = editingSlideId
+    ? "/api/hero-slides/" + editingSlideId
+    : "/api/hero-slides";
 
-        method: "POST",
+const method = editingSlideId
+    ? "PUT"
+    : "POST";
 
-        headers: {
+const res = await fetch(url,{
 
-            "Content-Type": "application/json"
+    method,
 
-        },
+    headers:{
+        "Content-Type":"application/json"
+    },
 
-        body: JSON.stringify({
+    body:JSON.stringify({
 
-            title,
+        title,
 
-            subtitle,
+        subtitle,
 
-            button_text,
+        button_text,
 
-            button_link,
+        button_link,
 
-            image
+        image,
 
-        })
+        active:true
 
-    });
+    })
 
+});
     const json = await res.json();
 
     if (json.success) {
 
-        alert("Hero Slide Added Successfully");
+        alert(
+
+editingSlideId
+
+?
+
+"Hero Slide Updated Successfully"
+
+:
+
+"Hero Slide Added Successfully"
+
+);
 
         document.getElementById("title").value = "";
 
@@ -196,6 +217,13 @@ async function saveSlide() {
         document.getElementById("buttonLink").value = "";
 
         document.getElementById("image").value = "";
+        
+        editingSlideId = null;
+
+document.querySelector(
+'button[onclick="saveSlide()"]'
+).innerHTML =
+"➕ Add Hero Slide";
 
         loadSlides();
 
@@ -246,8 +274,6 @@ data.message ||
 }
 
 }
-
-let editingSlideId = null;
 
 function editSlide(id){
 
