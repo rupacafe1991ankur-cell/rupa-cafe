@@ -262,21 +262,41 @@ success:true
 
 // Get Hero Slides
 
-app.get("/api/hero-slides", async (req,res)=>{
+app.get("/api/hero-slides", async (req, res) => {
 
-const { data,error } =
-await supabase
-.from("hero_slides")
-.select("*")
-.order("sort_order");
+  try {
 
-if(error){
+    const { data, error } = await supabase
+      .from("hero_slides")
+      .select("*")
+      .order("sort_order", { ascending: true });
 
-return res.json([]);
+    if (error) {
 
-}
+      console.log("Hero Slides Error:", error);
 
-res.json(data || []);
+      return res.status(500).json({
+        success: false,
+        message: error.message
+      });
+
+    }
+
+    res.json({
+      success: true,
+      data: data || []
+    });
+
+  } catch (err) {
+
+    console.log(err);
+
+    res.status(500).json({
+      success: false,
+      message: err.message
+    });
+
+  }
 
 });
 
