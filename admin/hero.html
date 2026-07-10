@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html>
+<head>
+
+<meta charset="UTF-8">
+
+<title>Hero Slider Manager</title>
+
+<link rel="stylesheet" href="/admin/css/style.css">
+
+</head>
+
+<body>
+
+<div class="admin-layout">
+
+<aside class="sidebar">
+
+<h2>Rupa Cafe Admin</h2>
+
+<a href="/admin/dashboard.html">Dashboard</a>
+
+<a href="/admin/menu.html">Food Items</a>
+
+<a href="/admin/orders.html">Orders</a>
+
+<a href="/admin/site.html">Website Settings</a>
+
+<a href="/admin/hero.html" class="active">
+Hero Slider Manager
+</a>
+
+<a href="/">View Frontend</a>
+
+<a href="#" onclick="logout()">
+Logout
+</a>
+
+</aside>
+
+<main class="main">
+
+<h1>
+
+🎞 Hero Slider Manager
+
+</h1>
+
+<div class="form-box">
+
+<input
+id="title"
+placeholder="Slide Title">
+
+<textarea
+id="subtitle"
+placeholder="Slide Subtitle">
+</textarea>
+
+<input
+id="buttonText"
+placeholder="Button Text">
+
+<input
+id="buttonLink"
+placeholder="Button Link">
+
+<input
+id="image"
+placeholder="Cloudinary Image URL">
+
+<button
+class="btn"
+onclick="saveSlide()">
+
+Add Hero Slide
+
+</button>
+
+</div>
+
+<hr style="margin:30px 0;">
+
+<div id="slidesList">
+
+Loading...
+
+</div>
+
+</main>
+
+</div>
+
+<script src="/admin/js/admin.js"></script>
+
+<script src="/admin/js/hero.js"></script>
+
+</body>
+</html>
