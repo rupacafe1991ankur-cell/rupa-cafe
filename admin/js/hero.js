@@ -99,4 +99,78 @@ async function loadSlides() {
 
 }
 
+async function saveSlide() {
+
+    const title = document.getElementById("title").value.trim();
+
+    const subtitle = document.getElementById("subtitle").value.trim();
+
+    const button_text = document.getElementById("buttonText").value.trim();
+
+    const button_link = document.getElementById("buttonLink").value.trim();
+
+    const image = document.getElementById("image").value.trim();
+
+    if (!title) {
+
+        alert("Please enter Slide Title");
+
+        return;
+
+    }
+
+    const res = await fetch("/api/hero-slides", {
+
+        method: "POST",
+
+        headers: {
+
+            "Content-Type": "application/json"
+
+        },
+
+        body: JSON.stringify({
+
+            title,
+
+            subtitle,
+
+            button_text,
+
+            button_link,
+
+            image
+
+        })
+
+    });
+
+    const json = await res.json();
+
+    if (json.success) {
+
+        alert("Hero Slide Added Successfully");
+
+        document.getElementById("title").value = "";
+
+        document.getElementById("subtitle").value = "";
+
+        document.getElementById("buttonText").value = "";
+
+        document.getElementById("buttonLink").value = "";
+
+        document.getElementById("image").value = "";
+
+        loadSlides();
+
+    }
+
+    else {
+
+        alert(json.message || "Failed");
+
+    }
+
+}
+
 window.onload = loadSlides;

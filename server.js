@@ -300,6 +300,86 @@ app.get("/api/hero-slides", async (req, res) => {
 
 });
 
+// Add Hero Slide
+
+app.post("/api/hero-slides", async (req, res) => {
+
+    try {
+
+        const {
+
+            title,
+            subtitle,
+            button_text,
+            button_link,
+            image
+
+        } = req.body;
+
+        const { data, error } = await supabase
+
+            .from("hero_slides")
+
+            .insert([{
+
+                title,
+
+                subtitle,
+
+                button_text,
+
+                button_link,
+
+                image,
+
+                active: true,
+
+                sort_order: Date.now()
+
+            }])
+
+            .select();
+
+        if (error) {
+
+            console.error(error);
+
+            return res.status(500).json({
+
+                success: false,
+
+                message: error.message
+
+            });
+
+        }
+
+        res.json({
+
+            success: true,
+
+            data
+
+        });
+
+    }
+
+    catch (err) {
+
+        console.error(err);
+
+        res.status(500).json({
+
+            success: false,
+
+            message: err.message
+
+        });
+
+    }
+
+});
+
 // Menu APIs
 app.get("/api/menu", async (req,res)=>{
 
