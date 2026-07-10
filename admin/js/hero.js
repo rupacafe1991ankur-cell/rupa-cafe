@@ -43,13 +43,20 @@ async function loadSlides() {
         ">
 
             <img
-            src="${slide.image || '/images/no-image.png'}"
-            style="
-            width:220px;
-            border-radius:12px;
-            display:block;
-            margin-bottom:15px;
-            ">
+src="${
+    slide.image &&
+    slide.image.trim() !== ""
+        ? slide.image
+        : "https://placehold.co/220x140?text=No+Image"
+}"
+style="
+width:220px;
+border-radius:12px;
+display:block;
+margin-bottom:15px;
+"
+onerror="this.src='https://placehold.co/220x140?text=No+Image'"
+>
 
             <h2>${slide.title}</h2>
 
