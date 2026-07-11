@@ -86,6 +86,18 @@ onerror="this.src='https://placehold.co/220x140?text=No+Image'"
 
 ${slide.active ? "🟢 Active" : "🔴 Disabled"}
 
+<div style="margin-top:10px;">
+
+<button
+class="btn"
+onclick="toggleSlide(${slide.id}, ${!slide.active})">
+
+${slide.active ? "🚫 Disable" : "✅ Activate"}
+
+</button>
+
+</div>
+
 </p>
 
 <div style="
@@ -232,6 +244,56 @@ document.querySelector(
     else {
 
         alert(json.message || "Failed");
+
+    }
+
+}
+
+async function toggleSlide(id, active){
+
+    const slide = window.heroSlides.find(
+        s => s.id === id
+    );
+
+    if(!slide) return;
+
+    const res = await fetch(
+        "/api/hero-slides/" + id,
+        {
+            method:"PUT",
+            headers:{
+                "Content-Type":"application/json"
+            },
+            body:JSON.stringify({
+
+                title: slide.title,
+
+                subtitle: slide.subtitle,
+
+                button_text: slide.button_text,
+
+                button_link: slide.button_link,
+
+                image: slide.image,
+
+                active: active
+
+            })
+        }
+    );
+
+    const data = await res.json();
+
+    if(data.success){
+
+        loadSlides();
+
+    }else{
+
+        alert(
+            data.message ||
+            "Unable to update status."
+        );
 
     }
 
