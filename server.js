@@ -401,6 +401,57 @@ if (countError) {
 
 });
 
+app.put("/api/hero-slides/reorder", async (req, res) => {
+
+    try {
+
+        const { slides } = req.body;
+
+        if (!Array.isArray(slides)) {
+
+            return res.status(400).json({
+                success: false,
+                message: "Invalid Data"
+            });
+
+        }
+
+        for (const slide of slides) {
+
+            const { error } = await supabase
+                .from("hero_slides")
+                .update({
+                    sort_order: slide.sort_order
+                })
+                .eq("id", slide.id);
+
+            if (error) {
+
+                return res.status(500).json({
+                    success: false,
+                    message: error.message
+                });
+
+            }
+
+        }
+
+        res.json({
+            success: true
+        });
+
+    } catch (err) {
+
+        res.status(500).json({
+            success: false,
+            message: err.message
+        });
+
+    }
+
+});
+
+
 app.put("/api/hero-slides/:id", async (req, res) => {
 
     try {
@@ -489,55 +540,6 @@ app.delete("/api/hero-slides/:id", async (req, res) => {
 
 });
 
-app.put("/api/hero-slides/reorder", async (req, res) => {
-
-    try {
-
-        const { slides } = req.body;
-
-        if (!Array.isArray(slides)) {
-
-            return res.status(400).json({
-                success: false,
-                message: "Invalid Data"
-            });
-
-        }
-
-        for (const slide of slides) {
-
-            const { error } = await supabase
-                .from("hero_slides")
-                .update({
-                    sort_order: slide.sort_order
-                })
-                .eq("id", slide.id);
-
-            if (error) {
-
-                return res.status(500).json({
-                    success: false,
-                    message: error.message
-                });
-
-            }
-
-        }
-
-        res.json({
-            success: true
-        });
-
-    } catch (err) {
-
-        res.status(500).json({
-            success: false,
-            message: err.message
-        });
-
-    }
-
-});
 
 // Menu APIs
 app.get("/api/menu", async (req,res)=>{
