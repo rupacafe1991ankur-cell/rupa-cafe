@@ -41,6 +41,9 @@ let discount = 0;
 let pointsDiscount = 0;
 let subtotal = 0;
 let selected = null;
+let heroSlides = [];
+let heroIndex = 0;
+let heroInterval = null;
 
 function placeholder(name){
 
@@ -83,11 +86,112 @@ ${name}
 )
 
 }
+async function loadHeroSlides(){
+
+try{
+
+const res =
+await fetch("/api/hero-slides");
+
+const json =
+await res.json();
+
+if(
+!json.success ||
+!json.data ||
+json.data.length===0
+){
+
+return false;
+
+}
+
+heroSlides = json.data;
+
+heroIndex = 0;
+
+updateHeroSlide();
+
+if(heroInterval){
+
+clearInterval(heroInterval);
+
+}
+
+heroInterval =
+setInterval(()=>{
+
+heroIndex++;
+
+if(heroIndex>=heroSlides.length){
+
+heroIndex=0;
+
+}
+
+updateHeroSlide();
+
+},5000);
+
+return true;
+
+}catch(e){
+
+console.log(e);
+
+return false;
+
+}
+
+}
+
+function updateHeroSlide(){
+
+const slide =
+heroSlides[heroIndex];
+
+if(!slide) return;
+
+const hero =
+document.getElementById(
+"heroSlider"
+);
+
+hero.style.backgroundImage =
+`url('${slide.image}')`;
+
+document.getElementById(
+"sliderTitle"
+).innerText =
+slide.title || "";
+
+document.getElementById(
+"sliderText"
+).innerText =
+slide.subtitle || "";
+
+const btn =
+document.querySelector(
+".hero-btn"
+);
+
+btn.innerText =
+slide.button_text ||
+"Explore Menu";
+
+btn.href =
+slide.button_link ||
+"#menu";
+
+}
 
 async function loadSite(){
 
 const site=
-
+await fetch("/api/site")
+.then(r=>r.json());
+const heroLoaded =
+await loadHeroSlides();
 await fetch(
 
 "/api/site"
@@ -161,6 +265,11 @@ contactText.innerText=
 site.contact||
 
 ""
+if(heroLoaded){
+
+return;
+
+}
 heroImages = [
 
 site.heroImage1,

@@ -274,6 +274,7 @@ app.get("/api/hero-slides", async (req, res) => {
     const { data, error } = await supabase
       .from("hero_slides")
       .select("*")
+      .eq("active", true)
       .order("sort_order", { ascending: true });
 
     if (error) {

@@ -66,32 +66,11 @@ Logout
       <input id="name" placeholder="Restaurant Frontend Name">
 
       <input id="adminNameInput" placeholder="Admin Panel Name">
-
-      <input id="hero" placeholder="Hero Heading">
+      
       <input id="whatsapp"
       placeholder="WhatsApp Number (91XXXXXXXXXX)">
 
-      <textarea id="heroText" placeholder="Hero Subtitle"></textarea>
-
       <textarea id="offer" placeholder="Special Offer"></textarea>
-      <h3>Hero Slider Images</h3>
-
-<input
-id="heroImage1"
-placeholder="Cloudinary Hero Image 1 URL">
-
-
-<input
-id="heroImage2"
-placeholder="Cloudinary Hero Image 2 URL">
-
-<input
-id="heroImage3"
-placeholder="Cloudinary Hero Image 3 URL">
-
-<input
-id="heroImage4"
-placeholder="Cloudinary Hero Image 4 URL">
 
       <textarea id="contact" placeholder="Contact Details"></textarea>
 
@@ -132,26 +111,8 @@ async function loadSite(){
   document.getElementById("adminNameInput").value =
   s.adminName || "";
 
-  document.getElementById("hero").value =
-  s.hero || "";
-
-  document.getElementById("heroText").value =
-  s.heroText || "";
-
   document.getElementById("offer").value =
   s.offer || "";
-
-  document.getElementById("heroImage1").value =
-  s.heroImage1 || "";
-
-  document.getElementById("heroImage2").value =
-  s.heroImage2 || "";
-
-  document.getElementById("heroImage3").value =
-  s.heroImage3 || "";
-
-  document.getElementById("heroImage4").value =
-  s.heroImage4 || "";
 
   document.getElementById("contact").value =
   s.contact || "";
@@ -189,20 +150,7 @@ async function saveSite(){
     body: JSON.stringify({
       name: document.getElementById("name").value,
       adminName: document.getElementById("adminNameInput").value,
-      hero: document.getElementById("hero").value,
-      heroText: document.getElementById("heroText").value,
       offer: document.getElementById("offer").value,
-      heroImage1:
-             document.getElementById("heroImage1").value,
-
-      heroImage2:
-             document.getElementById("heroImage2").value,
-
-      heroImage3:
-             document.getElementById("heroImage3").value,
-
-      heroImage4:
-             document.getElementById("heroImage4").value,
       contact: document.getElementById("contact").value,
       whatsapp: document.getElementById("whatsapp").value,
       copyright: document.getElementById("copyrightInput").value,
