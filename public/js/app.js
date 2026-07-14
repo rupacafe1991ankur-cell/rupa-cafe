@@ -105,7 +105,7 @@ json.data.length===0
 return false;
 
 }
-
+console.log("Hero Slides:", heroSlides);
 heroSlides = json.data;
 
 heroIndex = 0;
@@ -157,8 +157,12 @@ document.getElementById(
 "heroSlider"
 );
 
-hero.style.backgroundImage =
-`url('${slide.image}')`;
+if (slide.image) {
+    hero.style.backgroundImage = `url("${slide.image}")`;
+    hero.style.backgroundSize = "cover";
+    hero.style.backgroundPosition = "center";
+    hero.style.backgroundRepeat = "no-repeat";
+}
 
 document.getElementById(
 "sliderTitle"
@@ -266,27 +270,7 @@ if(heroLoaded){
 }else{
     console.log("Using Fallback Hero");
 }
-heroImages = [
 
-site.heroImage1,
-
-site.heroImage2,
-
-site.heroImage3,
-
-site.heroImage4
-
-].filter(Boolean);
-
-if(heroImages.length){
-
-document.getElementById(
-"heroSlider"
-).style.backgroundImage =
-
-`url('${heroImages[0]}')`;
-
-}
 
 copyrightText.innerText =
 site.copyright || "© 2026 Rupa Cafe"
