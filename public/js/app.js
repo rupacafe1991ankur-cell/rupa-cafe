@@ -242,17 +242,13 @@ if(site.whatsapp.startsWith("http")){
 
 }
 
-heroTitle.innerText=
+/*
+heroTitle.innerText =
+site.hero || "";
 
-site.hero||
-
-""
-
-heroText.innerText=
-
-site.heroText||
-
-""
+heroText.innerText =
+site.heroText || "";
+*/
 
 offerText.innerText=
 
@@ -266,9 +262,9 @@ site.contact||
 
 ""
 if(heroLoaded){
-
-return;
-
+    console.log("Hero Manager Loaded");
+}else{
+    console.log("Using Fallback Hero");
 }
 heroImages = [
 
@@ -2284,7 +2280,7 @@ nav.classList.toggle("show");
 
 }
 // Hero Slider
-
+const USE_LEGACY_HERO = false;
 let heroImages = [];
 
 const heroTexts = [
@@ -2314,6 +2310,9 @@ text:"Hot & Fresh Food At Your Doorstep"
 let heroIndex = 0;
 
 function changeHero(){
+   if(!USE_LEGACY_HERO){
+        return;
+    }
 if(heroImages.length === 0){
 return;
 }
