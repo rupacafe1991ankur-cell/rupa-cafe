@@ -103,9 +103,25 @@ ${slide.active ? "🚫 Disable" : "✅ Activate"}
 <div style="
 margin-top:15px;
 display:flex;
-gap:10px;
+gap:8px;
 flex-wrap:wrap;
 ">
+
+<button
+class="btn"
+onclick="moveSlide(${slide.id},'up')">
+
+⬆
+
+</button>
+
+<button
+class="btn"
+onclick="moveSlide(${slide.id},'down')">
+
+⬇
+
+</button>
 
 <button
 class="btn"
@@ -429,6 +445,105 @@ loadSlides();
 alert(
 data.message ||
 "Delete Failed"
+);
+
+}
+
+}
+
+async function moveSlide(id,direction){
+
+const slides =
+[...window.heroSlides];
+
+const index =
+slides.findIndex(
+s=>s.id===id
+);
+
+if(index===-1) return;
+
+if(
+direction==="up"
+&&
+index===0
+){
+
+return;
+
+}
+
+if(
+direction==="down"
+&&
+index===slides.length-1
+){
+
+return;
+
+}
+
+const swapIndex =
+direction==="up"
+?
+index-1
+:
+index+1;
+
+const temp =
+slides[index];
+
+slides[index] =
+slides[swapIndex];
+
+slides[swapIndex] =
+temp;
+
+const payload =
+slides.map((s,i)=>({
+
+id:s.id,
+
+sort_order:i+1
+
+}));
+
+const res =
+await fetch(
+"/api/hero-slides/reorder",
+{
+
+method:"PUT",
+
+headers:{
+"Content-Type":"application/json"
+},
+
+body:JSON.stringify({
+
+slides:payload
+
+})
+
+}
+
+);
+
+const json =
+await res.json();
+
+if(json.success){
+
+loadSlides();
+
+}else{
+
+alert(
+
+json.message ||
+
+"Unable to reorder"
+
 );
 
 }
