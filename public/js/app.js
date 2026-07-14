@@ -2307,7 +2307,7 @@ text:"Hot & Fresh Food At Your Doorstep"
 
 ];
 
-let heroIndex = 0;
+//let heroIndex = 0;
 
 function changeHero(){
    if(!USE_LEGACY_HERO){
