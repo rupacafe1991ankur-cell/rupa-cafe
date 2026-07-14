@@ -67,7 +67,41 @@ placeholder="Button Link">
 
 <input
 id="image"
-placeholder="Cloudinary Image URL">
+placeholder="Cloudinary Image URL"
+readonly>
+
+<input
+type="file"
+id="heroImageFile"
+accept="image/*">
+
+<button
+type="button"
+class="btn"
+onclick="uploadHeroImage()">
+
+📤 Upload Image
+
+</button>
+
+<div
+id="uploadStatus"
+style="
+margin-top:10px;
+font-size:14px;
+color:#0a7d25;
+">
+</div>
+
+<img
+id="heroPreview"
+style="
+display:none;
+margin-top:15px;
+width:220px;
+border-radius:12px;
+border:1px solid #ddd;
+">
 
 <button
 class="btn"

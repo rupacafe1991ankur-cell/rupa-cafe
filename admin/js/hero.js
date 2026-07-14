@@ -149,6 +149,90 @@ onclick="deleteSlide(${slide.id})">
 
 }
 
+async function uploadHeroImage(){
+
+    const fileInput =
+    document.getElementById("heroImageFile");
+
+    if(fileInput.files.length===0){
+
+        alert("Please choose an image.");
+
+        return;
+
+    }
+
+    const formData =
+    new FormData();
+
+    formData.append(
+        "image",
+        fileInput.files[0]
+    );
+
+    document.getElementById(
+        "uploadStatus"
+    ).innerHTML =
+    "⏳ Uploading...";
+
+    try{
+
+        const res =
+        await fetch("/api/upload-hero",{
+
+            method:"POST",
+
+            headers:{
+                "x-admin-key":
+                localStorage.getItem("adminKey")
+            },
+
+            body:formData
+
+        });
+
+        const json =
+        await res.json();
+
+        if(!json.success){
+
+            alert("Upload Failed");
+
+            return;
+
+        }
+
+        document.getElementById(
+            "image"
+        ).value =
+        json.url;
+
+        const preview =
+        document.getElementById(
+            "heroPreview"
+        );
+
+        preview.src =
+        json.url;
+
+        preview.style.display =
+        "block";
+
+        document.getElementById(
+            "uploadStatus"
+        ).innerHTML =
+        "✅ Upload Complete";
+
+    }catch(err){
+
+        console.log(err);
+
+        alert("Upload Failed");
+
+    }
+
+}
+
 async function saveSlide() {
 
     const title = document.getElementById("title").value.trim();
@@ -230,6 +314,20 @@ editingSlideId
 
         document.getElementById("image").value = "";
         
+        document.getElementById(
+        "heroImageFile"
+        ).value = "";
+
+        document.getElementById(
+        "heroPreview"
+        ).style.display =
+        "none";
+
+        document.getElementById(
+        "uploadStatus"
+        ).innerHTML =
+        "";
+
         editingSlideId = null;
 
 document.querySelector(
@@ -372,6 +470,26 @@ document.getElementById(
 "image"
 ).value =
 slide.image || "";
+
+const preview =
+document.getElementById(
+"heroPreview"
+);
+
+if(slide.image){
+
+    preview.src =
+    slide.image;
+
+    preview.style.display =
+    "block";
+
+}else{
+
+    preview.style.display =
+    "none";
+
+}
 
 document.querySelector(
 ".btn"
